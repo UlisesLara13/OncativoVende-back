@@ -1,4 +1,4 @@
-package com.example.OncativoVende.dtos;
+package com.example.OncativoVende.dtos.get;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetLocationDto {
-
+public class GetTagDto {
     private Integer id;
 
     private String description;

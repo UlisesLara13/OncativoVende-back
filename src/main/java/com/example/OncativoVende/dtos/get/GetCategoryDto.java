@@ -1,4 +1,4 @@
-package com.example.OncativoVende.dtos;
+package com.example.OncativoVende.dtos.get;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetTagDto {
+public class GetCategoryDto {
     private Integer id;
 
     private String description;

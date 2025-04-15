@@ -1,6 +1,6 @@
 package com.example.OncativoVende.controllers;
 
-import com.example.OncativoVende.dtos.GetRoleDto;
+import com.example.OncativoVende.dtos.get.GetRoleDto;
 import com.example.OncativoVende.services.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

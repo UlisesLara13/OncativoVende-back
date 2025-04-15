@@ -1,6 +1,6 @@
 package com.example.OncativoVende.services.implementation;
 
-import com.example.OncativoVende.dtos.GetRoleDto;
+import com.example.OncativoVende.dtos.get.GetRoleDto;
 import com.example.OncativoVende.repositores.RoleRepository;
 import com.example.OncativoVende.services.RoleService;
 import lombok.Data;

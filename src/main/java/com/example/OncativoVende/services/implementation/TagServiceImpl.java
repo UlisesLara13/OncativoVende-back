@@ -1,6 +1,6 @@
 package com.example.OncativoVende.services.implementation;
 
-import com.example.OncativoVende.dtos.GetTagDto;
+import com.example.OncativoVende.dtos.get.GetTagDto;
 import com.example.OncativoVende.repositores.TagRepository;
 import com.example.OncativoVende.services.TagService;
 import lombok.Data;

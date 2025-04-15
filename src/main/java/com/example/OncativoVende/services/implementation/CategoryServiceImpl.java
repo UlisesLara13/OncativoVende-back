@@ -1,6 +1,6 @@
 package com.example.OncativoVende.services.implementation;
 
-import com.example.OncativoVende.dtos.GetCategoryDto;
+import com.example.OncativoVende.dtos.get.GetCategoryDto;
 import com.example.OncativoVende.repositores.CategoryRepository;
 import com.example.OncativoVende.services.CategoryService;
 import lombok.Data;

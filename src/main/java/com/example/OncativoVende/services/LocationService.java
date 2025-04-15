@@ -1,6 +1,6 @@
 package com.example.OncativoVende.services;
 
-import com.example.OncativoVende.dtos.GetLocationDto;
+import com.example.OncativoVende.dtos.get.GetLocationDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

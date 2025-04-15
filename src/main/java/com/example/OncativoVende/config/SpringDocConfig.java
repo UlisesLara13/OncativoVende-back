@@ -1,5 +1,6 @@
 package com.example.OncativoVende.config;
 
+import com.example.OncativoVende.security.PasswordUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.Components;
@@ -43,5 +44,10 @@ public class SpringDocConfig {
     @Bean
     public ModelResolver modelResolver(ObjectMapper objectMapper){
         return new ModelResolver(objectMapper);
+    }
+
+    @Bean
+    public PasswordUtil passwordUtil() {
+        return new PasswordUtil();
     }
 }

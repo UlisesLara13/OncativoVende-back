@@ -1,7 +1,6 @@
 package com.example.OncativoVende.controllers;
 
-import com.example.OncativoVende.dtos.GetLocationDto;
-import com.example.OncativoVende.dtos.GetRoleDto;
+import com.example.OncativoVende.dtos.get.GetLocationDto;
 import com.example.OncativoVende.services.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

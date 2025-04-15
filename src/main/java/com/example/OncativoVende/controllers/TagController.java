@@ -1,6 +1,6 @@
 package com.example.OncativoVende.controllers;
 
-import com.example.OncativoVende.dtos.GetTagDto;
+import com.example.OncativoVende.dtos.get.GetTagDto;
 import com.example.OncativoVende.services.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

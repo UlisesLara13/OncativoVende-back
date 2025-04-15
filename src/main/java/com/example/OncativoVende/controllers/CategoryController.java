@@ -1,6 +1,6 @@
 package com.example.OncativoVende.controllers;
 
-import com.example.OncativoVende.dtos.GetCategoryDto;
+import com.example.OncativoVende.dtos.get.GetCategoryDto;
 import com.example.OncativoVende.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.example.OncativoVende.services.implementation;
 
-import com.example.OncativoVende.dtos.GetLocationDto;
+import com.example.OncativoVende.dtos.get.GetLocationDto;
 import com.example.OncativoVende.repositores.LocationRepository;
 import com.example.OncativoVende.services.LocationService;
 import lombok.Data;
