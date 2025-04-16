@@ -2,6 +2,7 @@ package com.example.OncativoVende.services.implementation;
 
 import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.PostUserDto;
+import com.example.OncativoVende.dtos.put.PutUserDto;
 import com.example.OncativoVende.entities.LocationEntity;
 import com.example.OncativoVende.entities.RoleEntity;
 import com.example.OncativoVende.entities.UserEntity;
@@ -42,10 +43,18 @@ public class UserServiceImpl implements UserService {
                 .map(userEntity -> {
                     GetUserDto getUserDto = new GetUserDto();
                     mapUserEntityToDto(userEntity, getUserDto);
-                    mapRolesToGetUserDto(getUserDto);
                     return getUserDto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public GetUserDto getUserById(Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        GetUserDto getUserDto = new GetUserDto();
+        mapUserEntityToDto(userEntity, getUserDto);
+        return getUserDto;
     }
 
     public void mapUserEntityToDto(UserEntity userEntity, GetUserDto getUserDto) {
@@ -59,6 +68,7 @@ public class UserServiceImpl implements UserService {
         getUserDto.setEmail(userEntity.getEmail());
         getUserDto.setVerified(userEntity.getVerified());
         getUserDto.setLocation(userEntity.getLocation_id().getDescription());
+        mapRolesToGetUserDto(getUserDto);
 
     }
 
@@ -87,6 +97,15 @@ public class UserServiceImpl implements UserService {
         userEntity.setLocation_id(getLocationById(postUserDto.getLocation_id()));
         userEntity.setActive(true);
         userEntity.setVerified(false);
+    }
+
+    public void mapUserDtoToEntity(PutUserDto putUserDto, UserEntity userEntity) {
+        userEntity.setName(putUserDto.getName());
+        userEntity.setSurname(putUserDto.getSurname());
+        userEntity.setUsername(putUserDto.getUsername());
+        userEntity.setAvatar_url(putUserDto.getAvatar_url());
+        userEntity.setEmail(putUserDto.getEmail());
+        userEntity.setLocation_id(getLocationById(putUserDto.getLocation_id()));
     }
 
     @Override
@@ -140,4 +159,82 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public void deleteUser(Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        userEntity.setActive(false);
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public void activeUser(Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        userEntity.setActive(true);
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public void verifyUser(Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        userEntity.setVerified(true);
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public void unverifyUser(Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        userEntity.setVerified(false);
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public GetUserDto updateUser(PutUserDto putUserDto, Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        validateUserUpdate(putUserDto, id);
+        mapUserDtoToEntity(putUserDto, userEntity);
+        updateUserRoles(userEntity, putUserDto.getRoles());
+        userRepository.save(userEntity);
+
+
+        GetUserDto getUserDto = new GetUserDto();
+        mapUserEntityToDto(userEntity, getUserDto);
+        return getUserDto;
+
+    }
+
+    public void validateUserUpdate(PutUserDto putUserDto, Integer userId) {
+        validateUsernameUpdate(putUserDto.getUsername(), userId);
+        validateEmailUpdate(putUserDto.getEmail(), userId);
+    }
+
+    public void validateUsernameUpdate(String username, Integer userId) {
+        userRepository.findByUsername(username)
+                .ifPresent(user -> {
+                    if (!user.getId().equals(userId)) {
+                        throw new IllegalArgumentException("Error updating user: username already in use by another user.");
+                    }
+                });
+    }
+
+    public void validateEmailUpdate(String email, Integer userId) {
+        userRepository.findByEmail(email)
+                .ifPresent(user -> {
+                    if (!user.getId().equals(userId)) {
+                        throw new IllegalArgumentException("Error updating user: email already in use by another user.");
+                    }
+                });
+    }
+
+    public void updateUserRoles(UserEntity userEntity, Integer[] roles) {
+        List<UserRoleEntity> userRoles = userRoleRepository.findAllByUser_Id(userEntity.getId());
+        for (UserRoleEntity userRole : userRoles) {
+            userRoleRepository.delete(userRole);
+        }
+        assignRolesToUser(userEntity, roles);
+    }
 }
