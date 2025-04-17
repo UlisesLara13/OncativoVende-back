@@ -18,6 +18,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +69,7 @@ public class UserServiceImpl implements UserService {
         getUserDto.setEmail(userEntity.getEmail());
         getUserDto.setVerified(userEntity.getVerified());
         getUserDto.setLocation(userEntity.getLocation_id().getDescription());
+        //TODO: insertar el rating para que se vea
         mapRolesToGetUserDto(getUserDto);
 
     }
@@ -237,4 +239,6 @@ public class UserServiceImpl implements UserService {
         }
         assignRolesToUser(userEntity, roles);
     }
+
+    //TODO: Calcular rating
 }

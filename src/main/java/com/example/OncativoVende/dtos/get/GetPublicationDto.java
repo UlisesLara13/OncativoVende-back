@@ -9,9 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetCategoryDto {
-
-    private Integer id;
-
-    private String description;
+public class GetPublicationDto {
 }
