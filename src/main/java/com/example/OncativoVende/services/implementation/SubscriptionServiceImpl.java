@@ -27,6 +27,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
 
+    private final RatingServiceImpl ratingService;
+
     @Override
     public GetSubscriptionDto createSubscription(PostSubscriptionDto postSubscriptionDto) {
         SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
@@ -76,6 +78,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         getShortUserDto.setSurname(subscriptionEntity.getUser_id().getSurname());
         getShortUserDto.setVerified(subscriptionEntity.getUser_id().getVerified());
         getShortUserDto.setAvatar_url(subscriptionEntity.getUser_id().getAvatar_url());
+        getShortUserDto.setRating(ratingService.calculateRating(subscriptionEntity.getUser_id().getId()));
         getSubscriptionTypeDto.setId(subscriptionEntity.getSubscription_type_id().getId());
         getSubscriptionTypeDto.setDescription(subscriptionEntity.getSubscription_type_id().getDescription());
         getSubscriptionTypeDto.setPrice(subscriptionEntity.getSubscription_type_id().getPrice());

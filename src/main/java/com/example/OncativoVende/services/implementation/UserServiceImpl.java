@@ -17,8 +17,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     private final PasswordUtil passwordEncoder;
+
+    private final RatingServiceImpl ratingService;
 
     @Override
     public List<GetUserDto> getAllUsers() {
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
         getUserDto.setEmail(userEntity.getEmail());
         getUserDto.setVerified(userEntity.getVerified());
         getUserDto.setLocation(userEntity.getLocation_id().getDescription());
-        //TODO: insertar el rating para que se vea
+        getUserDto.setRating(ratingService.calculateRating(userEntity.getId()));
         mapRolesToGetUserDto(getUserDto);
 
     }
@@ -240,5 +240,4 @@ public class UserServiceImpl implements UserService {
         assignRolesToUser(userEntity, roles);
     }
 
-    //TODO: Calcular rating
 }

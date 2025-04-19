@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -22,18 +23,18 @@ public class RatingEntity {
 
     @ManyToOne
     @JoinColumn(name = "rater_user_id")
-    private UserEntity rater_user;
+    private UserEntity raterUser;
 
     @ManyToOne
     @JoinColumn(name = "rated_user_id")
-    private UserEntity rated_user;
+    private UserEntity ratedUser;
 
     @ManyToOne
     @JoinColumn(name = "publication_id")
     private PublicationEntity publication;
 
     @Column
-    private Integer rating;
+    private BigDecimal rating;
 
     @Column
     private String comment;
