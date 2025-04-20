@@ -110,18 +110,21 @@ public class PublicationServiceImpl implements PublicationService {
         return getPublicationDto;
     }
 
-    @Transactional
     @Override
     public void deletePublication(Integer id) {
         PublicationEntity publicationEntity = publicationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Publication not found with id: " + id));
 
-        publicationCategoryRepository.deleteAllByPublicationId(publicationEntity.getId());
-        publicationTagRepository.deleteAllByPublicationId(publicationEntity.getId());
-        publicationImageRepository.deleteAllByPublicationId(publicationEntity.getId());
-        contactRepository.deleteAllByPublicationId(publicationEntity.getId());
-
-        publicationRepository.delete(publicationEntity);
+        publicationEntity.setActive(Boolean.FALSE);
+        publicationRepository.save(publicationEntity);
+//        publicationCategoryRepository.deleteAllByPublicationId(publicationEntity.getId());
+//        publicationTagRepository.deleteAllByPublicationId(publicationEntity.getId());
+//        publicationImageRepository.deleteAllByPublicationId(publicationEntity.getId());
+//        contactRepository.deleteAllByPublicationId(publicationEntity.getId());
+//
+//        publicationRepository.delete(publicationEntity);
+//
+// TODO: Si se desea borrar las tablas intermedias descomentar esto
     }
 
     public void mapPublicationDtoToEntity(PostPublicationDto postPublicationDto, PublicationEntity publicationEntity) {

@@ -37,4 +37,7 @@ public class ReportEntity {
     @Column
     private String status;
 
+    @Column
+    private String response;
+
 }
