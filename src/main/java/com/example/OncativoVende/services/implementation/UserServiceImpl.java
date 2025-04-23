@@ -1,6 +1,8 @@
 package com.example.OncativoVende.services.implementation;
 
 import com.example.OncativoVende.dtos.get.GetUserDto;
+import com.example.OncativoVende.dtos.post.ChangePassword;
+import com.example.OncativoVende.dtos.post.PostLoginDto;
 import com.example.OncativoVende.dtos.post.PostUserDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
 import com.example.OncativoVende.entities.LocationEntity;
@@ -14,9 +16,14 @@ import com.example.OncativoVende.repositores.UserRoleRepository;
 import com.example.OncativoVende.security.PasswordUtil;
 import com.example.OncativoVende.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -194,6 +201,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public GetUserDto getUserByEmail(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+        GetUserDto getUserDto = new GetUserDto();
+        mapUserEntityToDto(userEntity, getUserDto);
+        return getUserDto;
+    }
+
+    @Override
     public GetUserDto updateUser(PutUserDto putUserDto, Integer id) {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
@@ -238,6 +254,52 @@ public class UserServiceImpl implements UserService {
             userRoleRepository.delete(userRole);
         }
         assignRolesToUser(userEntity, roles);
+    }
+
+    @Override
+    public GetUserDto verifyLogin(PostLoginDto postLoginDto) {
+        GetUserDto user = this.getUserByUsername(postLoginDto.getEmail());
+
+        if (user == null) {
+            user = this.getUserByEmail(postLoginDto.getEmail());
+        }
+
+        if (user != null && passwordEncoder.checkPassword(postLoginDto.getPassword(), user.getPassword())) {
+            return user;
+        }
+
+        return null;
+    }
+
+    public GetUserDto getUserByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username).orElse(null);
+
+        if (userEntity == null) {
+            return null;
+        }
+        return getUserById(userEntity.getId());
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(ChangePassword changePasswordDto) {
+        GetUserDto getUserDto = this.getUserByEmail(changePasswordDto.getEmail());
+        if (getUserDto == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with email: " + changePasswordDto.getEmail());
+        }
+        UserEntity user = userRepository.findById(getUserDto.getId())
+                .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "User not found with email: " + changePasswordDto.getEmail()));
+
+
+        if (!PasswordUtil.checkPassword(changePasswordDto.getCurrentPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(401), "Current password is incorrect.");
+        }
+
+        String hashedNewPassword = PasswordUtil.hashPassword(changePasswordDto.getNewPassword());
+        user.setPassword(hashedNewPassword);
+
+        userRepository.save(user);
     }
 
 }
