@@ -40,4 +40,6 @@ public class GetUserDto {
 
     private BigDecimal rating;
 
+    private String subscription;
+
 }

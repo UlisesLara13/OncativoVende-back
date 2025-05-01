@@ -5,14 +5,8 @@ import com.example.OncativoVende.dtos.post.ChangePassword;
 import com.example.OncativoVende.dtos.post.PostLoginDto;
 import com.example.OncativoVende.dtos.post.PostUserDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
-import com.example.OncativoVende.entities.LocationEntity;
-import com.example.OncativoVende.entities.RoleEntity;
-import com.example.OncativoVende.entities.UserEntity;
-import com.example.OncativoVende.entities.UserRoleEntity;
-import com.example.OncativoVende.repositores.LocationRepository;
-import com.example.OncativoVende.repositores.RoleRepository;
-import com.example.OncativoVende.repositores.UserRepository;
-import com.example.OncativoVende.repositores.UserRoleRepository;
+import com.example.OncativoVende.entities.*;
+import com.example.OncativoVende.repositores.*;
 import com.example.OncativoVende.security.PasswordUtil;
 import com.example.OncativoVende.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +18,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordUtil passwordEncoder;
 
     private final RatingServiceImpl ratingService;
+    private final SubscriptionRepository subscriptionRepository;
 
     @Override
     public List<GetUserDto> getAllUsers() {
@@ -77,6 +73,7 @@ public class UserServiceImpl implements UserService {
         getUserDto.setVerified(userEntity.getVerified());
         getUserDto.setLocation(userEntity.getLocation_id().getDescription());
         getUserDto.setRating(ratingService.calculateRating(userEntity.getId()));
+        getUserDto.setSubscription(getSubscription(userEntity));
         mapRolesToGetUserDto(getUserDto);
 
     }
@@ -132,6 +129,19 @@ public class UserServiceImpl implements UserService {
         mapUserEntityToDto(savedUser, getUserDto);
 
         return getUserDto;
+    }
+
+    public String getSubscription(UserEntity userEntity) {
+        LocalDate currentDate = LocalDate.now();
+        SubscriptionEntity subscriptionEntity = subscriptionRepository.findByUserIdAndEndDateAfter(userEntity, currentDate);
+
+        if (subscriptionEntity != null) {
+            // Si hay una suscripción activa, devolvemos la descripción del tipo de suscripción
+            return subscriptionEntity.getSubscription_type_id().getDescription();
+        } else {
+            // Si no hay suscripción activa, devolvemos un mensaje adecuado
+            return "NO";
+        }
     }
 
     public void validateUsername(String username) {

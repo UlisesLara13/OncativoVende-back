@@ -43,10 +43,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void mapSubscriptionDtoToEntity(PostSubscriptionDto postSubscriptionDto, SubscriptionEntity subscriptionEntity) {
         subscriptionEntity.setDiscount_applied(postSubscriptionDto.getDiscount_applied());
-        subscriptionEntity.setStart_date(postSubscriptionDto.getStart_date());
-        subscriptionEntity.setEnd_date(postSubscriptionDto.getEnd_date());
+        subscriptionEntity.setStartDate(postSubscriptionDto.getStart_date());
+        subscriptionEntity.setEndDate(postSubscriptionDto.getEnd_date());
         subscriptionEntity.setTotal_price(postSubscriptionDto.getTotal_price());
-        subscriptionEntity.setUser_id(getUserById(postSubscriptionDto.getUser_id()));
+        subscriptionEntity.setUserId(getUserById(postSubscriptionDto.getUser_id()));
         subscriptionEntity.setSubscription_type_id(getSubscriptionTypeById(postSubscriptionDto.getSubscription_type_id()));
     }
 
@@ -66,19 +66,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         mapUserAndSubsType(getSubscriptionDto.getUser(), getSubscriptionDto.getSubscription_type(), subscriptionEntity);
         getSubscriptionDto.setId(subscriptionEntity.getId());
-        getSubscriptionDto.setStart_date(subscriptionEntity.getStart_date());
-        getSubscriptionDto.setEnd_date(subscriptionEntity.getEnd_date());
+        getSubscriptionDto.setStart_date(subscriptionEntity.getStartDate());
+        getSubscriptionDto.setEnd_date(subscriptionEntity.getEndDate());
         getSubscriptionDto.setTotal_price(subscriptionEntity.getTotal_price());
         getSubscriptionDto.setDiscount_applied(subscriptionEntity.getDiscount_applied());
     }
 
     private void mapUserAndSubsType(GetShortUserDto getShortUserDto, GetSubscriptionTypeDto getSubscriptionTypeDto, SubscriptionEntity subscriptionEntity) {
-        getShortUserDto.setId(subscriptionEntity.getUser_id().getId());
-        getShortUserDto.setName(subscriptionEntity.getUser_id().getName());
-        getShortUserDto.setSurname(subscriptionEntity.getUser_id().getSurname());
-        getShortUserDto.setVerified(subscriptionEntity.getUser_id().getVerified());
-        getShortUserDto.setAvatar_url(subscriptionEntity.getUser_id().getAvatar_url());
-        getShortUserDto.setRating(ratingService.calculateRating(subscriptionEntity.getUser_id().getId()));
+        getShortUserDto.setId(subscriptionEntity.getUserId().getId());
+        getShortUserDto.setName(subscriptionEntity.getUserId().getName());
+        getShortUserDto.setSurname(subscriptionEntity.getUserId().getSurname());
+        getShortUserDto.setVerified(subscriptionEntity.getUserId().getVerified());
+        getShortUserDto.setAvatar_url(subscriptionEntity.getUserId().getAvatar_url());
+        getShortUserDto.setRating(ratingService.calculateRating(subscriptionEntity.getUserId().getId()));
         getSubscriptionTypeDto.setId(subscriptionEntity.getSubscription_type_id().getId());
         getSubscriptionTypeDto.setDescription(subscriptionEntity.getSubscription_type_id().getDescription());
         getSubscriptionTypeDto.setPrice(subscriptionEntity.getSubscription_type_id().getPrice());
