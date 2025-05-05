@@ -23,17 +23,17 @@ public class SubscriptionEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity user_id;
+    private UserEntity userId;
 
     @ManyToOne
     @JoinColumn(name = "subscription_type_id", referencedColumnName = "id")
     private SubscriptionTypeEntity subscription_type_id;
 
-    @Column
-    private LocalDate start_date;
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
 
-    @Column
-    private LocalDate end_date;
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
 
     @Column
     private Integer discount_applied;

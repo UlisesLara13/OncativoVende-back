@@ -22,10 +22,10 @@ public class PostSubscriptionDto {
     @NotNull(message = "Subscription type cannot be null")
     private Integer subscription_type_id;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate start_date;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyy-MM-dd")
     private LocalDate end_date;
 
     @NotNull(message = "Total price cannot be null")
