@@ -312,4 +312,13 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public boolean updateAvatarUrl(String avatarUrl, Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        userEntity.setAvatar_url(avatarUrl);
+        userRepository.save(userEntity);
+        return true;
+    }
+
 }

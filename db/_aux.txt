@@ -1,0 +1,19 @@
+USE OncativoVende;
+
+INSERT INTO Roles(description) VALUES
+('ADMIN'),('USUARIO'),('MODERADOR');
+
+INSERT INTO Categories(description) VALUES
+('Vehículos'),('Deportes y fitness'),('Hogar y muebles'),('Electrónica'),('Indumentaria'),('Juguetes y juegos'),('Varios'),('Entretenimiento'),('Arte'),('Herramientas');
+
+INSERT INTO Tags(description) VALUES
+('Nuevo'),('Usado'),('Envío incluido'),('Precio negociable'),('Precio fijo'),('Retiro en mano'),('Punto de encuentro');
+
+INSERT INTO Locations(description) VALUES
+('Oncativo'),('Oliva'),('Manfredi'),('Laguna Larga'),('Pilar'),('Río Segundo'),('Villa del Rosario');
+
+INSERT INTO SubscriptionTypes(description,price) VALUES
+('BRONCE',1500),('PLATA',7500),('ORO',12000);
+
+INSERT INTO ContactTypes(description) VALUES
+('Whatsapp'),('Facebook'),('Teléfono'),('Instagram'),('Email');

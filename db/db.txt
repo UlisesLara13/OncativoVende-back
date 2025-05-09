@@ -1,0 +1,155 @@
+CREATE database OncativoVende;
+USE OncativoVende;
+
+
+CREATE TABLE Roles(
+id INT AUTO_INCREMENT PRIMARY KEY,
+description varchar(255));
+
+CREATE TABLE Categories(
+id INT AUTO_INCREMENT PRIMARY KEY,
+description varchar(255));
+
+CREATE TABLE Tags(
+id INT AUTO_INCREMENT PRIMARY KEY,
+description varchar(255));
+
+CREATE TABLE Locations(
+id INT AUTO_INCREMENT PRIMARY KEY,
+description varchar(255));
+
+CREATE TABLE Users(
+id INT AUTO_INCREMENT PRIMARY KEY,
+name varchar(255),
+surname varchar(255),
+username varchar(255),
+password varchar(255),
+email varchar(255),
+location_id int,
+active boolean,
+verified boolean,
+avatar_url varchar(500),
+FOREIGN KEY (location_id) REFERENCES Locations(id)
+);
+
+
+CREATE TABLE Events(
+id INT AUTO_INCREMENT PRIMARY KEY,
+title varchar(255),
+description varchar(500),
+image_url varchar(500),
+created_by_user_id int,
+start_date date,
+end_date date,
+FOREIGN KEY (created_by_user_id) REFERENCES Users(id)
+);
+
+CREATE TABLE SubscriptionTypes(
+id INT AUTO_INCREMENT PRIMARY KEY,
+description varchar(255),
+price decimal(10,2));
+
+CREATE TABLE Subscriptions(
+id INT AUTO_INCREMENT PRIMARY KEY,
+user_id int,
+subscription_type_id int,
+start_date date,
+end_date date,
+discount_applied int,
+total_price decimal(10,2),
+FOREIGN KEY (user_id) REFERENCES Users(id),
+FOREIGN KEY (subscription_type_id) REFERENCES SubscriptionTypes(id)
+);
+
+CREATE TABLE UserRoles(
+id INT AUTO_INCREMENT PRIMARY KEY,
+role_id int,
+user_id int,
+FOREIGN KEY (role_id) REFERENCES Roles(id),
+FOREIGN KEY (user_id) REFERENCES Users(id));
+
+CREATE TABLE Publications(
+id INT AUTO_INCREMENT PRIMARY KEY,
+user_id int,
+title varchar(255),
+description varchar(500),
+price decimal(10,2),
+active boolean,
+location_id int,
+FOREIGN KEY (user_id) REFERENCES Users(id),
+FOREIGN KEY (location_id) REFERENCES Locations(id)
+);
+
+CREATE TABLE Favorites(
+id INT AUTO_INCREMENT PRIMARY KEY,
+user_id int,
+publication_id int,
+FOREIGN KEY (user_id) REFERENCES Users(id),
+FOREIGN KEY (publication_id) REFERENCES Publications(id)
+);
+
+CREATE TABLE PublicationsCategories (
+id INT AUTO_INCREMENT PRIMARY KEY,
+publication_id int,
+category_id int,
+FOREIGN KEY (publication_id) REFERENCES Publications(id),
+FOREIGN KEY (category_id) REFERENCES Categories(id)
+);
+
+CREATE TABLE PublicationsTags(
+id INT AUTO_INCREMENT PRIMARY KEY,
+publication_id int,
+tag_id int,
+FOREIGN KEY (publication_id) REFERENCES Publications(id),
+FOREIGN KEY (tag_id) REFERENCES Tags(id));
+
+CREATE TABLE PublicationsImages(
+id INT AUTO_INCREMENT PRIMARY KEY,
+publication_id int,
+image_url varchar(500),
+FOREIGN KEY (publication_id) REFERENCES Publications(id));
+
+CREATE TABLE Reports(
+id INT AUTO_INCREMENT PRIMARY KEY,
+reported_by_user_id int,
+publication_id int,
+reason varchar(500),
+created_at date,
+status varchar(255),
+response varchar(255),
+FOREIGN KEY (publication_id) REFERENCES Publications(id),
+FOREIGN KEY (reported_by_user_id) REFERENCES Users(id));
+
+CREATE TABLE Ratings(
+id INT AUTO_INCREMENT PRIMARY KEY,
+rater_user_id int,
+rated_user_id int,
+publication_id int,
+rating decimal(10,2),
+comment varchar(500),
+created_at date,
+FOREIGN KEY (rater_user_id) REFERENCES Users(id),
+FOREIGN KEY (rated_user_id) REFERENCES Users(id),
+FOREIGN KEY (publication_id) REFERENCES Publications(id));
+
+CREATE TABLE ContactTypes(
+id INT AUTO_INCREMENT PRIMARY KEY,
+description varchar(255));
+
+CREATE TABLE Contacts(
+id INT AUTO_INCREMENT PRIMARY KEY,
+publication_id int,
+contact_type_id int,
+contact_value varchar(500),
+FOREIGN KEY (publication_id) REFERENCES Publications(id),
+FOREIGN KEY (contact_type_id) REFERENCES ContactTypes(id));
+
+
+
+
+
+
+
+
+
+

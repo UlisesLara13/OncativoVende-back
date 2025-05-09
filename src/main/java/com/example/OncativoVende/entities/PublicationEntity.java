@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "publications")
@@ -35,6 +36,9 @@ public class PublicationEntity {
 
     @Column
     private Boolean active;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 
     @ManyToOne
     @JoinColumn(name = "location_id")
