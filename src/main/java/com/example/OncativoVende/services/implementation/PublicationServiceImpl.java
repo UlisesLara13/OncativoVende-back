@@ -10,7 +10,6 @@ import com.example.OncativoVende.entities.*;
 import com.example.OncativoVende.repositores.*;
 import com.example.OncativoVende.services.PublicationService;
 import com.example.OncativoVende.services.RatingService;
-import com.example.OncativoVende.utils.PublicationSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -275,32 +273,37 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public Page<GetPublicationDto> filterPublications(PublicationFilterDto dto) {
-        // Normalización de valores
-        String searchTerm = dto.getSearchTerm() != null && !dto.getSearchTerm().isEmpty()
+        String searchTerm = (dto.getSearchTerm() != null && !dto.getSearchTerm().isBlank())
                 ? dto.getSearchTerm().toLowerCase()
                 : null;
 
-        String category = dto.getCategory() != null && !dto.getCategory().isEmpty()
+        String category = (dto.getCategory() != null && !dto.getCategory().isBlank())
                 ? dto.getCategory().toLowerCase()
                 : null;
 
-        String tag = dto.getTag() != null && !dto.getTag().isEmpty()
+        String tag = (dto.getTag() != null && !dto.getTag().isBlank())
                 ? dto.getTag().toLowerCase()
                 : null;
 
-        String location = dto.getLocation() != null && !dto.getLocation().isEmpty()
+        String location = (dto.getLocation() != null && !dto.getLocation().isBlank())
                 ? dto.getLocation().toLowerCase()
                 : null;
 
-        Double minPrice = dto.getMinPrice();
-        Double maxPrice = dto.getMaxPrice();
+        Double minPrice = (dto.getMinPrice() != null && dto.getMinPrice() > 0) ? dto.getMinPrice() : null;
+        Double maxPrice = (dto.getMaxPrice() != null && dto.getMaxPrice() > 0) ? dto.getMaxPrice() : null;
 
-        // Orden por defecto si no se especifica
-        String sortBy = (dto.getSortBy() != null && !dto.getSortBy().isEmpty()) ? dto.getSortBy() : "createdAt";
-        String sortDir = (dto.getSortDir() != null && !dto.getSortDir().isEmpty()) ? dto.getSortDir() : "DESC";
+        String sortBy = (dto.getSortBy() != null && isValidSortField(dto.getSortBy()))
+                ? dto.getSortBy()
+                : "createdAt";
 
-        // Pageable con orden
-        Pageable pageable = PageRequest.of(dto.getPage(), dto.getSize(), Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+        String sortDir = (dto.getSortDir() != null && dto.getSortDir().equalsIgnoreCase("ASC"))
+                ? "ASC"
+                : "DESC";
+
+        int page = (dto.getPage() >= 0) ? dto.getPage() : 0;
+        int size = (dto.getSize() > 0) ? dto.getSize() : 12;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
 
         // Llamada al repositorio
         Page<PublicationEntity> result = publicationRepository.findPublicationsWithAllFilters(
@@ -321,5 +324,9 @@ public class PublicationServiceImpl implements PublicationService {
         });
     }
 
+    private boolean isValidSortField(String field) {
+        return List.of("createdAt", "price", "title")
+                .contains(field);
+    }
 
 }

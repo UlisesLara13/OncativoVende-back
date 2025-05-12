@@ -18,7 +18,7 @@ public interface PublicationRepository extends JpaRepository<PublicationEntity, 
     List<PublicationEntity> findTop10ByActiveTrueOrderByCreatedAt();
 
 
-    @Query("SELECT p FROM PublicationEntity p " +
+    @Query("SELECT DISTINCT p FROM PublicationEntity p " +
             "LEFT JOIN PublicationCategoryEntity pc ON p.id = pc.publication.id " +
             "LEFT JOIN CategoryEntity c ON pc.categoryEntity.id = c.id " +
             "LEFT JOIN PublicationTagEntity pt ON p.id = pt.publication.id " +

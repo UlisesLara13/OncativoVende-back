@@ -74,7 +74,7 @@ public class PublicationController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/publications/filter")
+    @PostMapping("/filter")
     public Page<GetPublicationDto> filterPublications(@RequestBody PublicationFilterDto filterDto) {
         return publicationService.filterPublications(filterDto);
     }
