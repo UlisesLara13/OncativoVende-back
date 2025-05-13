@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordUtil passwordEncoder;
 
     private final RatingServiceImpl ratingService;
+
     private final SubscriptionRepository subscriptionRepository;
 
     @Override
@@ -136,10 +137,8 @@ public class UserServiceImpl implements UserService {
         SubscriptionEntity subscriptionEntity = subscriptionRepository.findByUserIdAndEndDateAfter(userEntity, currentDate);
 
         if (subscriptionEntity != null) {
-            // Si hay una suscripción activa, devolvemos la descripción del tipo de suscripción
             return subscriptionEntity.getSubscription_type_id().getDescription();
         } else {
-            // Si no hay suscripción activa, devolvemos un mensaje adecuado
             return "NO";
         }
     }
