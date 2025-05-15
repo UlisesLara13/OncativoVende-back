@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,9 +138,36 @@ public class UserServiceImpl implements UserService {
         SubscriptionEntity subscriptionEntity = subscriptionRepository.findByUserIdAndEndDateAfter(userEntity, currentDate);
 
         if (subscriptionEntity != null) {
+            assignPremiumRoleToUser(userEntity);
             return subscriptionEntity.getSubscription_type_id().getDescription();
+
         } else {
+            deletePremiumRoleFromUser(userEntity);
             return "NO";
+        }
+    }
+
+    public void assignPremiumRoleToUser(UserEntity userEntity) {
+        RoleEntity roleEntity = roleRepository.findByDescription("PREMIUM");
+        if (roleEntity == null) {
+            throw new EntityNotFoundException("Role not found with description: PREMIUM");
+        }
+        UserRoleEntity userRoleEntity = new UserRoleEntity();
+        userRoleEntity.setUser(userEntity);
+        userRoleEntity.setRole(roleEntity);
+        userRoleRepository.save(userRoleEntity);
+    }
+
+    public void deletePremiumRoleFromUser(UserEntity userEntity) {
+        RoleEntity roleEntity = roleRepository.findByDescription("PREMIUM");
+        if (roleEntity == null) {
+            throw new EntityNotFoundException("Role not found with description: PREMIUM");
+        }
+        List<UserRoleEntity> userRoles = userRoleRepository.findAllByUser_Id(userEntity.getId());
+        for (UserRoleEntity userRole : userRoles) {
+            if (userRole.getRole().getId().equals(roleEntity.getId())) {
+                userRoleRepository.delete(userRole);
+            }
         }
     }
 
