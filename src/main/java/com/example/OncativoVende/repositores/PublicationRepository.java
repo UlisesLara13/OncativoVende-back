@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface PublicationRepository extends JpaRepository<PublicationEntity, Integer>, JpaSpecificationExecutor<PublicationEntity> {
 
-    List<PublicationEntity> findTop10ByActiveTrueOrderByCreatedAt();
+    List<PublicationEntity> findTop10ByActiveTrueOrderByCreatedAtDesc();
 
 
     @Query("SELECT DISTINCT p FROM PublicationEntity p " +

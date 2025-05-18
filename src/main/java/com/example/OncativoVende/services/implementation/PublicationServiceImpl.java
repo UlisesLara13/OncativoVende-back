@@ -259,7 +259,7 @@ public class PublicationServiceImpl implements PublicationService {
     @Override
     public List<GetPublicationDto> getLast10Publications(){
 
-        List<PublicationEntity> publicationEntities = publicationRepository.findTop10ByActiveTrueOrderByCreatedAt();
+        List<PublicationEntity> publicationEntities = publicationRepository.findTop10ByActiveTrueOrderByCreatedAtDesc();
         List<GetPublicationDto> getPublicationDtos = publicationEntities.stream()
                 .map(publicationEntity -> {
                     GetPublicationDto getPublicationDto = new GetPublicationDto();
