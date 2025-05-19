@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "publications")
@@ -24,10 +26,10 @@ public class PublicationEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @Column
+    @Column(length = 50)
     private String title;
 
-    @Column
+    @Column(length = 500)
     private String description;
 
     @Column
@@ -35,6 +37,9 @@ public class PublicationEntity {
 
     @Column
     private Boolean active;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 
     @ManyToOne
     @JoinColumn(name = "location_id")

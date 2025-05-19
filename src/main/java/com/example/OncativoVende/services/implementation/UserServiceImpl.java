@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordUtil passwordEncoder;
 
     private final RatingServiceImpl ratingService;
+
     private final SubscriptionRepository subscriptionRepository;
 
     @Override
@@ -136,11 +138,36 @@ public class UserServiceImpl implements UserService {
         SubscriptionEntity subscriptionEntity = subscriptionRepository.findByUserIdAndEndDateAfter(userEntity, currentDate);
 
         if (subscriptionEntity != null) {
-            // Si hay una suscripción activa, devolvemos la descripción del tipo de suscripción
+            assignPremiumRoleToUser(userEntity);
             return subscriptionEntity.getSubscription_type_id().getDescription();
+
         } else {
-            // Si no hay suscripción activa, devolvemos un mensaje adecuado
+            deletePremiumRoleFromUser(userEntity);
             return "NO";
+        }
+    }
+
+    public void assignPremiumRoleToUser(UserEntity userEntity) {
+        RoleEntity roleEntity = roleRepository.findByDescription("PREMIUM");
+        if (roleEntity == null) {
+            throw new EntityNotFoundException("Role not found with description: PREMIUM");
+        }
+        UserRoleEntity userRoleEntity = new UserRoleEntity();
+        userRoleEntity.setUser(userEntity);
+        userRoleEntity.setRole(roleEntity);
+        userRoleRepository.save(userRoleEntity);
+    }
+
+    public void deletePremiumRoleFromUser(UserEntity userEntity) {
+        RoleEntity roleEntity = roleRepository.findByDescription("PREMIUM");
+        if (roleEntity == null) {
+            throw new EntityNotFoundException("Role not found with description: PREMIUM");
+        }
+        List<UserRoleEntity> userRoles = userRoleRepository.findAllByUser_Id(userEntity.getId());
+        for (UserRoleEntity userRole : userRoles) {
+            if (userRole.getRole().getId().equals(roleEntity.getId())) {
+                userRoleRepository.delete(userRole);
+            }
         }
     }
 
@@ -310,6 +337,15 @@ public class UserServiceImpl implements UserService {
         user.setPassword(hashedNewPassword);
 
         userRepository.save(user);
+    }
+
+    @Override
+    public boolean updateAvatarUrl(String avatarUrl, Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        userEntity.setAvatar_url(avatarUrl);
+        userRepository.save(userEntity);
+        return true;
     }
 
 }

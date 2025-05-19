@@ -1,6 +1,7 @@
 package com.example.OncativoVende.services.implementation;
 
 import com.example.OncativoVende.dtos.get.GetContactDto;
+import com.example.OncativoVende.dtos.get.GetContactTypeDto;
 import com.example.OncativoVende.dtos.post.PostContact;
 import com.example.OncativoVende.dtos.post.PostContactDto;
 import com.example.OncativoVende.entities.ContactEntity;
@@ -89,5 +90,17 @@ public class ContactServiceImpl implements ContactService {
         ContactEntity contactEntity = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Contact not found with id: " + id));
         contactRepository.delete(contactEntity);
+    }
+
+    @Override
+    public List<GetContactTypeDto> getContactTypes() {
+        List<GetContactTypeDto> contactTypeDtos = new ArrayList<>();
+        contactTypeRepository.findAll().forEach(contactTypeEntity -> {
+            GetContactTypeDto contactTypeDto = new GetContactTypeDto();
+            contactTypeDto.setId(contactTypeEntity.getId());
+            contactTypeDto.setDescription(contactTypeEntity.getDescription());
+            contactTypeDtos.add(contactTypeDto);
+        });
+        return contactTypeDtos;
     }
 }

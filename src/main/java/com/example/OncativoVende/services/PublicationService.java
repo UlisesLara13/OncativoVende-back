@@ -2,6 +2,8 @@ package com.example.OncativoVende.services;
 
 import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
+import com.example.OncativoVende.dtos.post.PublicationFilterDto;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,5 +20,9 @@ public interface PublicationService {
     GetPublicationDto updatePublication(Integer id, PostPublicationDto postPublicationDto);
 
     void deletePublication(Integer id);
+
+    List<GetPublicationDto> getLast10Publications();
+
+    Page<GetPublicationDto> filterPublications(PublicationFilterDto dto);
 
 }

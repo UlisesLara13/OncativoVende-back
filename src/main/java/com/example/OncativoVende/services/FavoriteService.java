@@ -9,4 +9,8 @@ public interface FavoriteService {
 
     GetPublicationDto createFavorite(PostFavoriteDto postFavoriteDto);
 
+    boolean isFavorite(Integer publicationId, Integer userId);
+
+    void deleteFavorite(Integer publicationId, Integer userId);
+
 }

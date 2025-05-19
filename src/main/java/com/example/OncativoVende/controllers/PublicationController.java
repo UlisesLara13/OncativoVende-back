@@ -2,8 +2,10 @@ package com.example.OncativoVende.controllers;
 
 import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
+import com.example.OncativoVende.dtos.post.PublicationFilterDto;
 import com.example.OncativoVende.services.PublicationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +62,21 @@ public class PublicationController {
     public ResponseEntity<Void> deletePublication(@PathVariable Integer id) {
         publicationService.deletePublication(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/last10")
+    public ResponseEntity<List<GetPublicationDto>> getLast10Publications() {
+        List<GetPublicationDto> result = publicationService.getLast10Publications();
+
+        if (result == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/filter")
+    public Page<GetPublicationDto> filterPublications(@RequestBody PublicationFilterDto filterDto) {
+        return publicationService.filterPublications(filterDto);
     }
 
 }

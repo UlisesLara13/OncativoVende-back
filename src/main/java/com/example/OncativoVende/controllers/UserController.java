@@ -82,4 +82,10 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    @PutMapping("/avatar/{id}")
+    public ResponseEntity<Void> updateAvatarUrl(@PathVariable Integer id, @RequestBody String avatarUrl) {
+        userService.updateAvatarUrl(avatarUrl, id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.OncativoVende.controllers;
 
 
 import com.example.OncativoVende.dtos.get.GetContactDto;
+import com.example.OncativoVende.dtos.get.GetContactTypeDto;
 import com.example.OncativoVende.dtos.post.PostContact;
 import com.example.OncativoVende.dtos.post.PostContactDto;
 import com.example.OncativoVende.services.ContactService;
@@ -44,6 +45,16 @@ public class ContactController {
     public ResponseEntity<Void> deleteContact(@PathVariable Integer id) {
         contactService.deleteContact(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/types")
+    public ResponseEntity<List<GetContactTypeDto>> getContactTypes() {
+        List<GetContactTypeDto> result = contactService.getContactTypes();
+
+        if (result == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(result);
     }
 
 }

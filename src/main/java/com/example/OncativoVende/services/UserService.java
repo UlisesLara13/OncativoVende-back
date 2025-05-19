@@ -20,6 +20,8 @@ public interface UserService {
 
     GetUserDto updateUser(PutUserDto putUserDto, Integer id);
 
+    boolean updateAvatarUrl(String avatarUrl, Integer id);
+
     void deleteUser(Integer id);
 
     void activeUser(Integer id);

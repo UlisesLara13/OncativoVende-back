@@ -1,6 +1,7 @@
 package com.example.OncativoVende.services;
 
 import com.example.OncativoVende.dtos.get.GetContactDto;
+import com.example.OncativoVende.dtos.get.GetContactTypeDto;
 import com.example.OncativoVende.dtos.post.PostContact;
 import com.example.OncativoVende.dtos.post.PostContactDto;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,7 @@ public interface ContactService {
     GetContactDto updateContact(Integer id, PostContact contactDto);
 
     void deleteContact(Integer id);
+
+    List<GetContactTypeDto> getContactTypes();
 
 }
