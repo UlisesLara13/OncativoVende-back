@@ -42,6 +42,18 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + postFavoriteDto.getUser_id())));
     }
 
+    @Override
+    public boolean isFavorite(Integer publicationId, Integer userId) {
+        return favoriteRepository.existsByPublicationIdAndUserId(publicationId, userId);
+    }
+
+    @Override
+    public void deleteFavorite(Integer publicationId, Integer userId) {
+        FavoriteEntity favoriteEntity = favoriteRepository.findByPublicationIdAndUserId(publicationId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Favorite not found with publication id: " + publicationId + " and user id: " + userId));
+        favoriteRepository.delete(favoriteEntity);
+    }
+
 
 
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -25,10 +26,10 @@ public class PublicationEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @Column
+    @Column(length = 50)
     private String title;
 
-    @Column
+    @Column(length = 500)
     private String description;
 
     @Column

@@ -29,4 +29,17 @@ public class FavoriteController {
         }
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/is-favorite")
+    public ResponseEntity<Boolean> isFavorite(@Valid @RequestBody PostFavoriteDto postFavoriteDto) {
+        boolean result = favoriteService.isFavorite(postFavoriteDto.getPublication_id(), postFavoriteDto.getUser_id());
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<Void> deleteFavorite(@Valid @RequestBody PostFavoriteDto postFavoriteDto) {
+        favoriteService.deleteFavorite(postFavoriteDto.getPublication_id(), postFavoriteDto.getUser_id());
+        return ResponseEntity.noContent().build();
+    }
 }
