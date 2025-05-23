@@ -34,18 +34,20 @@ public interface PublicationRepository extends JpaRepository<PublicationEntity, 
             "   LOWER(c.description) LIKE %:searchTerm% OR " +
             "   LOWER(t.description) LIKE %:searchTerm%" +
             ") " +
-            "AND (:category IS NULL OR LOWER(c.description) LIKE %:category%) " +
-            "AND (:tag IS NULL OR LOWER(t.description) LIKE %:tag%) " +
+            "AND (:categories IS NULL OR LOWER(c.description) IN :categories) " +
+            "AND (:tags IS NULL OR LOWER(t.description) IN :tags) " +
             "AND (:location IS NULL OR LOWER(p.location_id.description) LIKE %:location%) " +
             "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR p.price <= :maxPrice)")
-    Page<PublicationEntity> findPublicationsWithAllFilters(@Param("searchTerm") String searchTerm,
-                                                           @Param("category") String category,
-                                                           @Param("tag") String tag,
-                                                           @Param("location") String location,
-                                                           @Param("minPrice") Double minPrice,
-                                                           @Param("maxPrice") Double maxPrice,
-                                                           Pageable pageable);
+    Page<PublicationEntity> findPublicationsWithAllFilters(
+            @Param("searchTerm") String searchTerm,
+            @Param("categories") List<String> categories,
+            @Param("tags") List<String> tags,
+            @Param("location") String location,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            Pageable pageable);
+
 
 
 }

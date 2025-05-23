@@ -138,6 +138,7 @@ public class PublicationServiceImpl implements PublicationService {
         publicationEntity.setDescription(postPublicationDto.getDescription());
         publicationEntity.setPrice(postPublicationDto.getPrice());
         publicationEntity.setCreatedAt(LocalDate.now());
+        publicationEntity.setCoords(postPublicationDto.getCoords());
         publicationEntity.setLocation_id(locationRepository.findById(postPublicationDto.getLocation_id())
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + postPublicationDto.getLocation_id())));
         publicationEntity.setUser(userRepository.findById(postPublicationDto.getUser_id())
@@ -205,7 +206,7 @@ public class PublicationServiceImpl implements PublicationService {
         getPublicationDto.setContacts(mapContactsToDto(publicationEntity));
         getPublicationDto.setImages(mapImagesToDto(publicationEntity));
         getPublicationDto.setCreated_at(LocalDate.now());
-
+        getPublicationDto.setCoords(publicationEntity.getCoords());
     }
 
     public void mapShortUserEntityToDto(UserEntity userEntity, GetShortUserDto getShortUserDto) {
@@ -277,12 +278,12 @@ public class PublicationServiceImpl implements PublicationService {
                 ? dto.getSearchTerm().toLowerCase()
                 : null;
 
-        String category = (dto.getCategory() != null && !dto.getCategory().isBlank())
-                ? dto.getCategory().toLowerCase()
+        List<String> categories = (dto.getCategories() != null && !dto.getCategories().isEmpty())
+                ? dto.getCategories().stream().map(String::toLowerCase).toList()
                 : null;
 
-        String tag = (dto.getTag() != null && !dto.getTag().isBlank())
-                ? dto.getTag().toLowerCase()
+        List<String> tags = (dto.getTags() != null && !dto.getTags().isEmpty())
+                ? dto.getTags().stream().map(String::toLowerCase).toList()
                 : null;
 
         String location = (dto.getLocation() != null && !dto.getLocation().isBlank())
@@ -305,18 +306,16 @@ public class PublicationServiceImpl implements PublicationService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
 
-        // Llamada al repositorio
         Page<PublicationEntity> result = publicationRepository.findPublicationsWithAllFilters(
                 searchTerm,
-                category,
-                tag,
+                categories,
+                tags,
                 location,
                 minPrice,
                 maxPrice,
                 pageable
         );
 
-        // Mapeo a DTO
         return result.map(entity -> {
             GetPublicationDto dtoResult = new GetPublicationDto();
             mapPublicationEntityToDto(entity, dtoResult);

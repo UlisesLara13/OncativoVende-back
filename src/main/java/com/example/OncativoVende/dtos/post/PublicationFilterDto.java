@@ -1,14 +1,16 @@
 package com.example.OncativoVende.dtos.post;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class PublicationFilterDto {
     private String searchTerm;
-    private String category;
+    List<String> categories;
+    List<String> tags;
     private String location;
     private Double minPrice;
     private Double maxPrice;
-    private String tag;
     private String sortBy = "createdAt";    // Campo de ordenamiento (por defecto fecha de creación)
     private String sortDir = "desc";        // Dirección de ordenamiento
     private int page = 0;                  // Página (0 = primera página)

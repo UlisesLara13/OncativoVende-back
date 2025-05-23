@@ -40,5 +40,6 @@ public class GetPublicationDto {
 
     private List<String> images;
 
+    private String coords;
 
 }

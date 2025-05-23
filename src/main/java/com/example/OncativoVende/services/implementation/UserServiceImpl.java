@@ -152,6 +152,12 @@ public class UserServiceImpl implements UserService {
         if (roleEntity == null) {
             throw new EntityNotFoundException("Role not found with description: PREMIUM");
         }
+
+        boolean alreadyAssigned = userRoleRepository.existsByUserAndRole(userEntity, roleEntity);
+        if (alreadyAssigned) {
+            return;
+        }
+        
         UserRoleEntity userRoleEntity = new UserRoleEntity();
         userRoleEntity.setUser(userEntity);
         userRoleEntity.setRole(roleEntity);
