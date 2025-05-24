@@ -126,13 +126,11 @@ CREATE TABLE Ratings(
 id INT AUTO_INCREMENT PRIMARY KEY,
 rater_user_id int,
 rated_user_id int,
-publication_id int,
 rating decimal(10,2),
 comment varchar(500),
 created_at date,
 FOREIGN KEY (rater_user_id) REFERENCES Users(id),
-FOREIGN KEY (rated_user_id) REFERENCES Users(id),
-FOREIGN KEY (publication_id) REFERENCES Publications(id));
+FOREIGN KEY (rated_user_id) REFERENCES Users(id);
 
 CREATE TABLE ContactTypes(
 id INT AUTO_INCREMENT PRIMARY KEY,

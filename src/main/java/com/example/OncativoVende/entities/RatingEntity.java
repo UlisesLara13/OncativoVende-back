@@ -29,10 +29,6 @@ public class RatingEntity {
     @JoinColumn(name = "rated_user_id")
     private UserEntity ratedUser;
 
-    @ManyToOne
-    @JoinColumn(name = "publication_id")
-    private PublicationEntity publication;
-
     @Column
     private BigDecimal rating;
 
@@ -40,6 +36,6 @@ public class RatingEntity {
     private String comment;
 
     @Column
-    private LocalDate created_at;
+    private LocalDate createdAt;
 
 }

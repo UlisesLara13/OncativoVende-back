@@ -205,7 +205,7 @@ public class PublicationServiceImpl implements PublicationService {
         getPublicationDto.setTags(mapTagsToDto(publicationEntity));
         getPublicationDto.setContacts(mapContactsToDto(publicationEntity));
         getPublicationDto.setImages(mapImagesToDto(publicationEntity));
-        getPublicationDto.setCreated_at(LocalDate.now());
+        getPublicationDto.setCreated_at(publicationEntity.getCreatedAt());
         getPublicationDto.setCoords(publicationEntity.getCoords());
     }
 
@@ -254,6 +254,9 @@ public class PublicationServiceImpl implements PublicationService {
         List<String> images = publicationImageEntity.stream()
                 .map(image -> image.getImage_url())
                 .toList();
+        if (images.isEmpty()) {
+            images = List.of("assets/Publications/0-notfound.jpg");
+        }
         return images;
     }
 

@@ -1,4 +1,4 @@
-package com.example.OncativoVende.dtos.post;
+package com.example.OncativoVende.dtos.put;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -15,15 +15,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostRatingDto {
-
-    @NotNull (message = "Rater user ID cannot be null")
-    private Integer rater_user_id;
-
-    @NotNull (message = "Rated user ID cannot be null")
-    private Integer rated_user_id;
-
-    @NotNull (message = "Rating cannot be null")
+public class PutRatingDto {
+    @NotNull(message = "Rating cannot be null")
     @DecimalMin(value = "0.0", inclusive = true, message = "Rating must be at least 0")
     @DecimalMax(value = "5.0", inclusive = true, message = "Rating must be at most 5")
     private BigDecimal rating;
@@ -31,5 +24,4 @@ public class PostRatingDto {
     @NotNull (message = "Comment cannot be null")
     @Size(max = 255, message = "Comment must be at most 255 characters")
     private String comment;
-
 }
