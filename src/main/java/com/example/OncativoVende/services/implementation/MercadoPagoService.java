@@ -4,10 +4,7 @@ import com.example.OncativoVende.dtos.mp.ItemDTO;
 import com.example.OncativoVende.dtos.mp.PaymentRequestDTO;
 import com.example.OncativoVende.dtos.mp.PaymentResponseDTO;
 import com.mercadopago.MercadoPagoConfig;
-import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
-import com.mercadopago.client.preference.PreferenceClient;
-import com.mercadopago.client.preference.PreferenceItemRequest;
-import com.mercadopago.client.preference.PreferenceRequest;
+import com.mercadopago.client.preference.*;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.preference.Preference;
@@ -61,39 +58,40 @@ public class MercadoPagoService {
 
     public PaymentResponseDTO createPreference(PaymentRequestDTO paymentRequest) throws MPException, MPApiException {
 
-        // Validar que el access token esté configurado
         if (accessToken == null || accessToken.trim().isEmpty()) {
             throw new IllegalStateException("Access token de MercadoPago no configurado");
         }
 
-        // Debug: mostrar información del token (sin exponer datos sensibles)
         logger.debug("Usando access token: {}****", accessToken.substring(0, Math.min(15, accessToken.length())));
 
         try {
-            // Crear cliente de preferencias
             PreferenceClient client = new PreferenceClient();
 
-            // Crear items de la preferencia
             List<PreferenceItemRequest> items = createPreferenceItems(paymentRequest);
 
-            // URLs de retorno
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
                     .success(baseUrl + "/payment-success")
                     .failure(baseUrl + "/payment-failure")
                     .pending(baseUrl + "/payment-pending")
                     .build();
 
-            // Crear la preferencia con Builder
+            // Usar externalReference enviado desde frontend o generar uno nuevo si es nulo
+            String externalRef = paymentRequest.getExternalReference();
+            if (externalRef == null || externalRef.isEmpty()) {
+                externalRef = generateExternalReference();
+            }
+
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                     .items(items)
                     .backUrls(backUrls)
-                    .externalReference(generateExternalReference())
+                    .externalReference(externalRef)
                     .statementDescriptor("ONCATIVO VENDE")
                     .expires(false)
                     .notificationUrl(webhookUrl != null && !webhookUrl.trim().isEmpty() ? webhookUrl : null)
+                    .paymentMethods(PreferencePaymentMethodsRequest.builder().build())
                     .build();
 
-            logger.debug("Creando preferencia con external reference: {}", preferenceRequest.getExternalReference());
+            logger.debug("Creando preferencia con external reference: {}", externalRef);
 
             Preference preference = client.create(preferenceRequest);
 
@@ -163,11 +161,6 @@ public class MercadoPagoService {
 
     private String generateExternalReference() {
         return "ONCATIVO-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    // Método para validar la configuración
-    public boolean isConfigured() {
-        return accessToken != null && !accessToken.trim().isEmpty();
     }
 
     // Método para debug - verificar si el token es válido

@@ -22,4 +22,5 @@ public class PaymentRequestDTO {
 
     private String payerEmail;
     private List<ItemDTO> items;
+    private String externalReference;
 }

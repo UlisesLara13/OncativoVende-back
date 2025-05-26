@@ -97,4 +97,37 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         mapSubscriptionEntityToDto(subscriptionEntity, getSubscriptionDto);
         return getSubscriptionDto;
     }
+
+    @Override
+    public GetSubscriptionDto createSubscriptionByUserIdAndSubscription(String userId, String subscription){
+        UserEntity userEntity = userRepository.findById(Integer.parseInt(userId))
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        SubscriptionTypeEntity subscriptionTypeEntity = subscriptionTypeRepository.findByDescription(subscription)
+                .orElseThrow(() -> new EntityNotFoundException("Subscription type not found with id: " + subscription));
+
+        SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
+        subscriptionEntity.setUserId(userEntity);
+        subscriptionEntity.setSubscription_type_id(subscriptionTypeEntity);
+        subscriptionEntity.setStartDate(LocalDate.now());
+        switch (subscription) {
+            case "Bronce":
+                subscriptionEntity.setEndDate(LocalDate.now().plusMonths(1));
+                break;
+            case "Plata":
+                subscriptionEntity.setEndDate(LocalDate.now().plusMonths(6));
+                break;
+            case "Oro":
+                subscriptionEntity.setEndDate(LocalDate.now().plusMonths(12));
+                break;
+        }
+        subscriptionEntity.setTotal_price(subscriptionTypeEntity.getPrice());
+        subscriptionEntity.setDiscount_applied(0);
+
+        SubscriptionEntity savedSubscription = subscriptionRepository.save(subscriptionEntity);
+        GetSubscriptionDto getSubscriptionDto = new GetSubscriptionDto();
+        mapSubscriptionEntityToDto(savedSubscription, getSubscriptionDto);
+
+        return getSubscriptionDto;
+    }
 }

@@ -12,7 +12,7 @@ public class MercadoPagoConfiguration implements WebMvcConfigurer {
 
     @PostConstruct
     public void init() {
-        MercadoPagoConfig.setAccessToken("APP_USR-5492132292908711-052522-0052e108423b28d476166cb21e51737d-156700574");
+        MercadoPagoConfig.setAccessToken("APP_USR-8915559851236409-052602-83a7c5798b066a2c15b16a5fe4b9d9bf-2461602818");
     }
 
     @Override

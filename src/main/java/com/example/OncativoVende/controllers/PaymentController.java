@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,7 +38,7 @@ public class PaymentController {
     @Autowired
     private SubscriptionService subscriptionService;
 
-    @Value("${mercadopago.public-key}")
+    @Value("APP_USR-d1645f22-9b67-4d63-b863-54ed12eda947")
     private String publicKey;
 
     @PostMapping("/create-preference")
@@ -120,7 +121,7 @@ public class PaymentController {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(resourceUrl))
-                    .header("Authorization", "Bearer " + "TU_ACCESS_TOKEN")
+                    .header("Authorization", "Bearer " + "APP_USR-5492132292908711-052522-0052e108423b28d476166cb21e51737d-156700574")
                     .GET()
                     .build();
 
@@ -145,26 +146,34 @@ public class PaymentController {
                 // Por ejemplo, obtener el usuario a partir del email u otro campo
                 Map<String, Object> payer = (Map<String, Object>) paymentData.get("payer");
                 String email = payer != null ? (String) payer.get("email") : null;
-                String tittle = (String) paymentData.get("title");
-                String subscription = "";
-                switch (tittle) {
-                    case "Suscripción Bronce":
-                        subscription = "Bronce";
-                    case "Suscripción Plata":
-                        subscription = "Plata";
-                    case "Suscripción Oro":
-                        subscription = "Oro";
-                    default:
-                        subscription = "Desconocida";
+                Map<String, Object> additionalInfo = (Map<String, Object>) paymentData.get("additional_info");
+                List<Map<String, Object>> items = (List<Map<String, Object>>) additionalInfo.get("items");
+                String title = items != null && !items.isEmpty() ? (String) items.get(0).get("title") : null;
+                String externalReference = (String) paymentData.get("external_reference");
 
+                String subscription = "Desconocida";
+                if (title != null) {
+                    switch (title) {
+                        case "Suscripción Suscripción Bronce":
+                            subscription = "Bronce";
+                            break;
+                        case "Suscripción Suscripción Plata":
+                            subscription = "Plata";
+                            break;
+                        case "Suscripción Suscripción Oro":
+                            subscription = "Oro";
+                            break;
+                    }
                 }
 
-                if (email != null) {
+                if (externalReference != null) {
 
+                    logger.info("External Reference (user id): {}", externalReference);
                     logger.info(subscription);
                     logger.info("Suscripción activada para el usuario: {}", email);
+                    subscriptionService.createSubscriptionByUserIdAndSubscription(externalReference,subscription);
                 } else {
-                    logger.warn("No se encontró email del pagador en la respuesta");
+                    logger.warn("No se encontró el usuario pagador en la respuesta");
                 }
             } else {
                 logger.info("Pago no aprobado o en otro estado: {}", status);
