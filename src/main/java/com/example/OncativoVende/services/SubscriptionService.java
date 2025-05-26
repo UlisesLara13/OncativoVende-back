@@ -9,4 +9,6 @@ public interface SubscriptionService {
 
     GetSubscriptionDto createSubscription(PostSubscriptionDto postSubscriptionDto);
 
+    GetSubscriptionDto getSubscriptionByUserId(Integer userId);
+
 }

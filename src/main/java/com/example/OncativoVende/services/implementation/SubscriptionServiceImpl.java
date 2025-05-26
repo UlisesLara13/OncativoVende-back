@@ -16,6 +16,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Data
 @RequiredArgsConstructor
 @Service
@@ -82,5 +84,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         getSubscriptionTypeDto.setId(subscriptionEntity.getSubscription_type_id().getId());
         getSubscriptionTypeDto.setDescription(subscriptionEntity.getSubscription_type_id().getDescription());
         getSubscriptionTypeDto.setPrice(subscriptionEntity.getSubscription_type_id().getPrice());
+    }
+
+    @Override
+    public GetSubscriptionDto getSubscriptionByUserId(Integer userId) {
+        UserEntity userEntity = getUserById(userId);
+        SubscriptionEntity subscriptionEntity = subscriptionRepository.findByUserIdAndEndDateAfter(userEntity, LocalDate.now());
+        if (subscriptionEntity == null) {
+            throw new EntityNotFoundException("No active subscription found for user with id: " + userId);
+        }
+        GetSubscriptionDto getSubscriptionDto = new GetSubscriptionDto();
+        mapSubscriptionEntityToDto(subscriptionEntity, getSubscriptionDto);
+        return getSubscriptionDto;
     }
 }
