@@ -11,11 +11,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PublicationRepository extends JpaRepository<PublicationEntity, Integer>, JpaSpecificationExecutor<PublicationEntity> {
 
     List<PublicationEntity> findTop10ByActiveTrueOrderByCreatedAtDesc();
+
+    Optional<PublicationEntity> findByIdAndActiveTrue(Integer id);
 
 
     @Query("SELECT DISTINCT p FROM PublicationEntity p " +

@@ -25,4 +25,6 @@ public interface PublicationService {
 
     Page<GetPublicationDto> filterPublications(PublicationFilterDto dto);
 
+    GetPublicationDto getPublicationActiveById(Integer id);
+
 }

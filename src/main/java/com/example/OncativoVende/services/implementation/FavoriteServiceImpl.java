@@ -13,6 +13,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Data
 @RequiredArgsConstructor
 @Service
@@ -54,6 +56,13 @@ public class FavoriteServiceImpl implements FavoriteService {
         favoriteRepository.delete(favoriteEntity);
     }
 
+    @Override
+    public List<GetPublicationDto> getFavoritesByUserId(Integer userId) {
+        List<FavoriteEntity> favoriteEntities = favoriteRepository.findByUserIdOrderByIdDesc(userId);
+        return favoriteEntities.stream()
+                .map(favorite -> publicationService.getPublicationActiveById(favorite.getPublication().getId()))
+                .toList();
+    }
 
 
 }

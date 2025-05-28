@@ -91,6 +91,17 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
+    public GetPublicationDto getPublicationActiveById(Integer id) {
+        PublicationEntity publicationEntity = publicationRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new EntityNotFoundException("Publication not found with id: " + id));
+        GetPublicationDto getPublicationDto = new GetPublicationDto();
+        mapPublicationEntityToDto(publicationEntity, getPublicationDto);
+        return getPublicationDto;
+    }
+
+
+
+    @Override
     @Transactional
     public GetPublicationDto updatePublication(Integer id, PostPublicationDto postPublicationDto) {
         PublicationEntity publicationEntity = publicationRepository.findById(id)
