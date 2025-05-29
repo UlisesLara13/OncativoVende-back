@@ -2,6 +2,7 @@ package com.example.OncativoVende.services;
 
 import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
+import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,11 @@ public interface PublicationService {
     Page<GetPublicationDto> filterPublications(PublicationFilterDto dto);
 
     GetPublicationDto getPublicationActiveById(Integer id);
+
+    Page<GetPublicationDto> filterUserPublications(Integer userId, PublicationByUserFilterDto dto);
+
+    void addView(Integer id);
+
+    void reactivatePublication(Integer id);
 
 }

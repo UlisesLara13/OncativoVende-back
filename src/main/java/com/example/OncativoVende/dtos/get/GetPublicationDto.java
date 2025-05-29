@@ -42,4 +42,6 @@ public class GetPublicationDto {
 
     private String coords;
 
+    private Integer views;
+
 }

@@ -77,7 +77,8 @@ price decimal(10,2),
 active boolean,
 location_id int,
 coords varchar(255),
-created_at date, 
+created_at date,
+views int, 
 FOREIGN KEY (user_id) REFERENCES Users(id),
 FOREIGN KEY (location_id) REFERENCES Locations(id)
 );

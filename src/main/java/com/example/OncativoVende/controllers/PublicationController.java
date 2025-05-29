@@ -3,6 +3,7 @@ package com.example.OncativoVende.controllers;
 import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
+import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
 import com.example.OncativoVende.services.PublicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -77,6 +78,23 @@ public class PublicationController {
     @PostMapping("/filter")
     public Page<GetPublicationDto> filterPublications(@RequestBody PublicationFilterDto filterDto) {
         return publicationService.filterPublications(filterDto);
+    }
+
+    @PostMapping("/filter/user/{userId}")
+    public Page<GetPublicationDto> filterUserPublications(@PathVariable Integer userId, @RequestBody PublicationByUserFilterDto filterDto) {
+        return publicationService.filterUserPublications(userId, filterDto);
+    }
+
+    @PostMapping("/add-view/{id}")
+    public ResponseEntity<Void> addView(@PathVariable Integer id) {
+        publicationService.addView(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reactivate/{id}")
+    public ResponseEntity<Void> reactivatePublication(@PathVariable Integer id) {
+        publicationService.reactivatePublication(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

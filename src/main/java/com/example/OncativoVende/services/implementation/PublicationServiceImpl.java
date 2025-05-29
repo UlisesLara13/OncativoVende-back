@@ -5,6 +5,7 @@ import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.get.GetShortUserDto;
 import com.example.OncativoVende.dtos.post.PostContact;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
+import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
 import com.example.OncativoVende.entities.*;
 import com.example.OncativoVende.repositores.*;
@@ -155,6 +156,7 @@ public class PublicationServiceImpl implements PublicationService {
         publicationEntity.setUser(userRepository.findById(postPublicationDto.getUser_id())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + postPublicationDto.getUser_id())));
         publicationEntity.setActive(Boolean.TRUE);
+        publicationEntity.setViews(0);
     }
 
     public void createCategories(PostPublicationDto postPublicationDto , PublicationEntity publicationEntity) {
@@ -218,6 +220,7 @@ public class PublicationServiceImpl implements PublicationService {
         getPublicationDto.setImages(mapImagesToDto(publicationEntity));
         getPublicationDto.setCreated_at(publicationEntity.getCreatedAt());
         getPublicationDto.setCoords(publicationEntity.getCoords());
+        getPublicationDto.setViews(publicationEntity.getViews());
     }
 
     public void mapShortUserEntityToDto(UserEntity userEntity, GetShortUserDto getShortUserDto) {
@@ -342,5 +345,57 @@ public class PublicationServiceImpl implements PublicationService {
                 .contains(field);
     }
 
+    @Override
+    public Page<GetPublicationDto> filterUserPublications(Integer userId, PublicationByUserFilterDto dto) {
+        String searchTerm = (dto.getSearchTerm() != null && !dto.getSearchTerm().isBlank())
+                ? dto.getSearchTerm().toLowerCase()
+                : null;
+
+        Boolean active = dto.getActive();
+
+        String sortBy = (dto.getSortBy() != null && isValidSortField(dto.getSortBy()))
+                ? dto.getSortBy()
+                : "createdAt";
+
+        String sortDir = (dto.getSortDir() != null && dto.getSortDir().equalsIgnoreCase("ASC"))
+                ? "ASC"
+                : "DESC";
+
+        int page = (dto.getPage() >= 0) ? dto.getPage() : 0;
+        int size = (dto.getSize() > 0) ? dto.getSize() : 12;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        Page<PublicationEntity> result = publicationRepository.findUserPublicationsWithFilters(
+                userId,
+                searchTerm,
+                active,
+                pageable
+        );
+
+        return result.map(entity -> {
+            GetPublicationDto dtoResult = new GetPublicationDto();
+            mapPublicationEntityToDto(entity, dtoResult);
+            return dtoResult;
+        });
+    }
+
+    @Override
+    public void addView(Integer id) {
+        PublicationEntity publicationEntity = publicationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Publication not found with id: " + id));
+            publicationEntity.setViews(publicationEntity.getViews() + 1);
+            publicationRepository.save(publicationEntity);
+    }
+
+    @Override
+    public void reactivatePublication(Integer id) {
+        PublicationEntity publicationEntity = publicationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Publication not found with id: " + id));
+        publicationEntity.setActive(Boolean.TRUE);
+        publicationEntity.setViews(0);
+        publicationEntity.setCreatedAt(LocalDate.now());
+        publicationRepository.save(publicationEntity);
+    }
 
 }

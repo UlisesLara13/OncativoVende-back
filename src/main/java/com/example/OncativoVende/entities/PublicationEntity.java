@@ -47,4 +47,7 @@ public class PublicationEntity {
     @Column
     private String coords;
 
+    @Column
+    private Integer views;
+
 }

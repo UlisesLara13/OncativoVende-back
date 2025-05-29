@@ -51,7 +51,19 @@ public interface PublicationRepository extends JpaRepository<PublicationEntity, 
             @Param("maxPrice") Double maxPrice,
             Pageable pageable);
 
-
+    @Query("SELECT p FROM PublicationEntity p " +
+            "WHERE p.user.id = :userId " +
+            "AND (:active IS NULL OR p.active = :active) " +
+            "AND (" +
+            "   :searchTerm IS NULL OR " +
+            "   LOWER(p.title) LIKE %:searchTerm% OR " +
+            "   LOWER(p.description) LIKE %:searchTerm%" +
+            ")")
+    Page<PublicationEntity> findUserPublicationsWithFilters(
+            @Param("userId") Integer userId,
+            @Param("searchTerm") String searchTerm,
+            @Param("active") Boolean active,
+            Pageable pageable);
 
 }
 
