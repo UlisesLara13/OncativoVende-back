@@ -4,6 +4,7 @@ import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.ChangePassword;
 import com.example.OncativoVende.dtos.post.PostLoginDto;
 import com.example.OncativoVende.dtos.post.PostUserDto;
+import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ public interface UserService {
     GetUserDto createUser(PostUserDto postUserDto);
 
     GetUserDto updateUser(PutUserDto putUserDto, Integer id);
+
+    GetUserDto updatePersonalData(PutPersonalDataDto putPersonalDataDto, Integer id);
 
     boolean updateAvatarUrl(String avatarUrl, Integer id);
 

@@ -22,4 +22,9 @@ public class ValidatorServiceImpl implements ValidatorService {
     public boolean isEmailUnique(String email) {
         return !userRepository.existsByEmail(email);
     }
+
+    @Override
+    public boolean isEmailUniqueAndNotCurrentUser(String email, Integer userId) {
+        return !userRepository.existsByEmailAndIdNot(email, userId);
+    }
 }

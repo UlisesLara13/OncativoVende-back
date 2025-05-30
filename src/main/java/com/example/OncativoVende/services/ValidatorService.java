@@ -10,4 +10,6 @@ public interface ValidatorService {
 
     public boolean isEmailUnique(String email);
 
+    public boolean isEmailUniqueAndNotCurrentUser(String email, Integer userId);
+
 }

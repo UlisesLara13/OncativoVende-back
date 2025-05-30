@@ -17,6 +17,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     boolean existsByEmail(String email);
 
-    UserEntity findTopByOrderByIdDesc();
+    boolean existsByEmailAndIdNot(String email, Integer id);
 
 }

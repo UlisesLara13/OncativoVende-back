@@ -2,12 +2,14 @@ package com.example.OncativoVende.controllers;
 
 import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.PostUserDto;
+import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
 import com.example.OncativoVende.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.OncativoVende.dtos.post.ChangePassword;
 
 import java.util.List;
 
@@ -82,9 +84,26 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    @PutMapping("/personal-data/{id}")
+    public ResponseEntity<GetUserDto> updateUser(@PathVariable Integer id, @Valid @RequestBody PutPersonalDataDto putPersonalDataDto) {
+        GetUserDto result = userService.updatePersonalData(putPersonalDataDto, id);
+
+        if (result == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
+
     @PutMapping("/avatar/{id}")
     public ResponseEntity<Void> updateAvatarUrl(@PathVariable Integer id, @RequestBody String avatarUrl) {
         userService.updateAvatarUrl(avatarUrl, id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePassword changePassword) {
+        userService.changePassword(changePassword);
         return ResponseEntity.noContent().build();
     }
 

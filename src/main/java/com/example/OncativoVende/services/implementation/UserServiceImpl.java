@@ -4,6 +4,7 @@ import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.ChangePassword;
 import com.example.OncativoVende.dtos.post.PostLoginDto;
 import com.example.OncativoVende.dtos.post.PostUserDto;
+import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
 import com.example.OncativoVende.entities.*;
 import com.example.OncativoVende.repositores.*;
@@ -266,6 +267,28 @@ public class UserServiceImpl implements UserService {
         mapUserEntityToDto(userEntity, getUserDto);
         return getUserDto;
 
+    }
+
+    @Override
+    public GetUserDto updatePersonalData(PutPersonalDataDto putPersonalDataDto, Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        validateEmailUpdate(putPersonalDataDto.getEmail(), id);
+        userEntity.setName(putPersonalDataDto.getName());
+        if (putPersonalDataDto.getSurname() != null) {
+            userEntity.setSurname(putPersonalDataDto.getSurname());
+        }
+        else {
+            userEntity.setSurname("");
+        }
+        userEntity.setEmail(putPersonalDataDto.getEmail());
+        userEntity.setLocation_id(getLocationById(putPersonalDataDto.getLocation_id()));
+
+        userRepository.save(userEntity);
+
+        GetUserDto getUserDto = new GetUserDto();
+        mapUserEntityToDto(userEntity, getUserDto);
+        return getUserDto;
     }
 
     public void validateUserUpdate(PutUserDto putUserDto, Integer userId) {
