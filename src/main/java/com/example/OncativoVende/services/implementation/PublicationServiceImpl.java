@@ -150,7 +150,8 @@ public class PublicationServiceImpl implements PublicationService {
         publicationEntity.setDescription(postPublicationDto.getDescription());
         publicationEntity.setPrice(postPublicationDto.getPrice());
         publicationEntity.setCreatedAt(LocalDate.now());
-        publicationEntity.setCoords(postPublicationDto.getCoords());
+        publicationEntity.setLatitude(postPublicationDto.getLatitude());
+        publicationEntity.setLongitude(postPublicationDto.getLongitude());
         publicationEntity.setLocation_id(locationRepository.findById(postPublicationDto.getLocation_id())
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + postPublicationDto.getLocation_id())));
         publicationEntity.setUser(userRepository.findById(postPublicationDto.getUser_id())
@@ -219,7 +220,8 @@ public class PublicationServiceImpl implements PublicationService {
         getPublicationDto.setContacts(mapContactsToDto(publicationEntity));
         getPublicationDto.setImages(mapImagesToDto(publicationEntity));
         getPublicationDto.setCreated_at(publicationEntity.getCreatedAt());
-        getPublicationDto.setCoords(publicationEntity.getCoords());
+        getPublicationDto.setLatitude(publicationEntity.getLatitude());
+        getPublicationDto.setLongitude(publicationEntity.getLongitude());
         getPublicationDto.setViews(publicationEntity.getViews());
     }
 

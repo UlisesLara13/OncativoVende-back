@@ -40,7 +40,9 @@ public class GetPublicationDto {
 
     private List<String> images;
 
-    private String coords;
+    private String latitude;
+
+    private String longitude;
 
     private Integer views;
 

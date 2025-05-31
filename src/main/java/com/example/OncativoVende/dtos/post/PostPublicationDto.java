@@ -42,6 +42,8 @@ public class PostPublicationDto {
 
     private List<PostContact> contacts;
 
-    private String coords;
+    private String latitude;
+
+    private String longitude;
 
 }

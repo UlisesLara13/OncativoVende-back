@@ -45,7 +45,10 @@ public class PublicationEntity {
     private LocationEntity location_id;
 
     @Column
-    private String coords;
+    private String latitude;
+
+    @Column
+    private String longitude;
 
     @Column
     private Integer views;
