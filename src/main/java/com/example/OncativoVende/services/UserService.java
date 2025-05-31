@@ -1,9 +1,7 @@
 package com.example.OncativoVende.services;
 
 import com.example.OncativoVende.dtos.get.GetUserDto;
-import com.example.OncativoVende.dtos.post.ChangePassword;
-import com.example.OncativoVende.dtos.post.PostLoginDto;
-import com.example.OncativoVende.dtos.post.PostUserDto;
+import com.example.OncativoVende.dtos.post.*;
 import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
 import org.springframework.stereotype.Service;
@@ -38,5 +36,9 @@ public interface UserService {
     GetUserDto verifyLogin(PostLoginDto postLoginDto);
 
     void changePassword(ChangePassword changePassword);
+
+    void resetPassword(ResetPasswordDto dto);
+
+    void sendRecoveryCode(RecoveryRequestDto request);
 
 }

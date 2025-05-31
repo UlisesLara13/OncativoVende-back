@@ -3,13 +3,22 @@ package com.example.OncativoVende.controllers;
 import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.ChangePassword;
 import com.example.OncativoVende.dtos.post.PostLoginDto;
+import com.example.OncativoVende.dtos.post.RecoveryRequestDto;
+import com.example.OncativoVende.dtos.post.ResetPasswordDto;
+import com.example.OncativoVende.entities.UserEntity;
+import com.example.OncativoVende.repositores.UserRepository;
 import com.example.OncativoVende.security.JwtUtil;
+import com.example.OncativoVende.security.PasswordUtil;
 import com.example.OncativoVende.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/auth")
@@ -75,6 +84,18 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         response.put("message", "Contraseña actualizada exitosamente");
         return response;
+    }
+
+    @PostMapping("/recover-password")
+    public ResponseEntity<?> sendRecoveryCode(@RequestBody RecoveryRequestDto request) {
+        userService.sendRecoveryCode(request);
+        return ResponseEntity.ok(Map.of("message", "Código enviado al correo."));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto dto) {
+        userService.resetPassword(dto);
+        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente."));
     }
 
 }

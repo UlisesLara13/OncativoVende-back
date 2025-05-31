@@ -1,9 +1,7 @@
 package com.example.OncativoVende.services.implementation;
 
 import com.example.OncativoVende.dtos.get.GetUserDto;
-import com.example.OncativoVende.dtos.post.ChangePassword;
-import com.example.OncativoVende.dtos.post.PostLoginDto;
-import com.example.OncativoVende.dtos.post.PostUserDto;
+import com.example.OncativoVende.dtos.post.*;
 import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
 import com.example.OncativoVende.entities.*;
@@ -14,14 +12,19 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Data
@@ -42,6 +45,8 @@ public class UserServiceImpl implements UserService {
     private final RatingServiceImpl ratingService;
 
     private final SubscriptionRepository subscriptionRepository;
+
+    private final JavaMailSender mailSender;
 
     @Override
     public List<GetUserDto> getAllUsers() {
@@ -376,5 +381,53 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
         return true;
     }
+
+    @Override
+    public void sendRecoveryCode(RecoveryRequestDto request) {
+        UserEntity user = findByEmailOrUsername(request.getEmailOrUsername());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado.");
+        }
+
+        String code = String.format("%06d", new Random().nextInt(999999));
+        user.setRecovery_code(code);
+        user.setRecovery_code_expiration(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        sendRecoveryCode(user.getEmail(), code);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDto dto) {
+        UserEntity user = findByEmailOrUsername(dto.getEmailOrUsername());
+        if (user == null || !dto.getCode().equals(user.getRecovery_code())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código inválido.");
+        }
+
+        if (user.getRecovery_code_expiration().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código expirado.");
+        }
+
+        user.setPassword(passwordEncoder.hashPassword(dto.getNewPassword()));
+        user.setRecovery_code(null);
+        user.setRecovery_code_expiration(null);
+        userRepository.save(user);
+    }
+
+    public UserEntity findByEmailOrUsername(String emailOrUsername) {
+        return userRepository.findByEmail(emailOrUsername)
+                .or(() -> userRepository.findByUsername(emailOrUsername))
+                .orElse(null);
+    }
+
+    public void sendRecoveryCode(String email, String code) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Recuperación de contraseña");
+        message.setText("Tu código de recuperación es: " + code);
+        mailSender.send(message);
+    }
+
+
 
 }
