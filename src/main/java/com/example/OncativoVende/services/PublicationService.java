@@ -34,4 +34,6 @@ public interface PublicationService {
 
     void reactivatePublication(Integer id);
 
+    boolean isSameUserPublication(Integer publicationId, Integer userId);
+
 }

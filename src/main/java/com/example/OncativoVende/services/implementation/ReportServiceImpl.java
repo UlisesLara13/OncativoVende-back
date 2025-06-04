@@ -65,4 +65,10 @@ public class ReportServiceImpl implements ReportService {
         }
         return result;
     }
+
+    @Override
+    public boolean userHasReportedPublication(Integer userId, Integer publicationId) {
+        return reportRepository.existsByPublicationIdAndUserId(publicationId, userId);
+    }
+
 }

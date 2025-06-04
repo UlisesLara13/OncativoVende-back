@@ -97,4 +97,10 @@ public class PublicationController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/is-same-user/{publicationId}/{userId}")
+    public ResponseEntity<Boolean> isSameUserPublication(@PathVariable Integer publicationId, @PathVariable Integer userId) {
+        boolean isSameUser = publicationService.isSameUserPublication(publicationId, userId);
+        return ResponseEntity.ok(isSameUser);
+    }
+
 }

@@ -37,4 +37,14 @@ public class ReportController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/user/{userId}/publication/{publicationId}")
+    public ResponseEntity<Boolean> userHasReportedPublication(@PathVariable Integer userId, @PathVariable Integer publicationId) {
+        Boolean result = reportService.userHasReportedPublication(userId, publicationId);
+
+        if (result == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
 }

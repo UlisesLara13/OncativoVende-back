@@ -11,4 +11,6 @@ public interface ReportService {
 
     List<GetPublicationDto> getReportedPublications();
 
+    boolean userHasReportedPublication(Integer publicationId,Integer userId);
+
 }

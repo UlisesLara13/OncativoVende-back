@@ -400,4 +400,11 @@ public class PublicationServiceImpl implements PublicationService {
         publicationRepository.save(publicationEntity);
     }
 
+    @Override
+    public boolean isSameUserPublication(Integer publicationId, Integer userId) {
+        PublicationEntity publicationEntity = publicationRepository.findById(publicationId)
+                .orElseThrow(() -> new EntityNotFoundException("Publication not found with id: " + publicationId));
+        return publicationEntity.getUser().getId().equals(userId);
+    }
+
 }

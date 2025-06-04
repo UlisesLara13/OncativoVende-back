@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReportRepository extends JpaRepository<ReportEntity, Integer> {
 
+    boolean existsByPublicationIdAndUserId(Integer publicationId, Integer userId);
+
 }
