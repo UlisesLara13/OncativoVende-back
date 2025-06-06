@@ -20,6 +20,8 @@ public interface PublicationRepository extends JpaRepository<PublicationEntity, 
 
     Optional<PublicationEntity> findByIdAndActiveTrue(Integer id);
 
+    List<PublicationEntity> findAllByUser_Id(Integer userId);
+
 
     @Query("SELECT DISTINCT p FROM PublicationEntity p " +
             "LEFT JOIN PublicationCategoryEntity pc ON p.id = pc.publication.id " +

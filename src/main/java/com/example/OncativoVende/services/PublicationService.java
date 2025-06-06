@@ -36,4 +36,6 @@ public interface PublicationService {
 
     boolean isSameUserPublication(Integer publicationId, Integer userId);
 
+    void deleteAllPublicationsByUserId(Integer userId);
+
 }

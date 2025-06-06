@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -53,4 +54,7 @@ public class UserEntity {
 
     @Column
     private LocalDateTime recovery_code_expiration;
+
+    @Column
+    private LocalDate created_at;
 }

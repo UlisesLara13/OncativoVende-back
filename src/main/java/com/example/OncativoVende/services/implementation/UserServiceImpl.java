@@ -1,5 +1,6 @@
 package com.example.OncativoVende.services.implementation;
 
+import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.*;
 import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
@@ -7,12 +8,17 @@ import com.example.OncativoVende.dtos.put.PutUserDto;
 import com.example.OncativoVende.entities.*;
 import com.example.OncativoVende.repositores.*;
 import com.example.OncativoVende.security.PasswordUtil;
+import com.example.OncativoVende.services.PublicationService;
 import com.example.OncativoVende.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.mail.SimpleMailMessage;
@@ -47,6 +53,7 @@ public class UserServiceImpl implements UserService {
     private final SubscriptionRepository subscriptionRepository;
 
     private final JavaMailSender mailSender;
+    private final PublicationService publicationService;
 
     @Override
     public List<GetUserDto> getAllUsers() {
@@ -82,6 +89,7 @@ public class UserServiceImpl implements UserService {
         getUserDto.setLocation(userEntity.getLocation_id().getDescription());
         getUserDto.setRating(ratingService.calculateRating(userEntity.getId()));
         getUserDto.setSubscription(getSubscription(userEntity));
+        getUserDto.setCreated_at(userEntity.getCreated_at());
         mapRolesToGetUserDto(getUserDto);
 
     }
@@ -109,6 +117,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setAvatar_url(postUserDto.getAvatar_url());
         userEntity.setEmail(postUserDto.getEmail());
         userEntity.setLocation_id(getLocationById(postUserDto.getLocation_id()));
+        userEntity.setCreated_at(LocalDate.now());
         userEntity.setActive(true);
         userEntity.setVerified(false);
     }
@@ -221,6 +230,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Integer id) {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        publicationService.deleteAllPublicationsByUserId(userEntity.getId());
         userEntity.setActive(false);
         userRepository.save(userEntity);
     }
@@ -428,6 +438,64 @@ public class UserServiceImpl implements UserService {
         mailSender.send(message);
     }
 
+    @Override
+    public Page<GetUserDto> filterUsers(UserFilterDto dto) {
+        String searchTerm = (dto.getSearchTerm() != null && !dto.getSearchTerm().isBlank())
+                ? dto.getSearchTerm().toLowerCase()
+                : null;
 
+        List<String> roles = (dto.getRoles() != null && !dto.getRoles().isEmpty())
+                ? dto.getRoles().stream().map(String::toLowerCase).toList()
+                : null;
 
-}
+        String location = (dto.getLocation() != null && !dto.getLocation().isBlank())
+                ? dto.getLocation().toLowerCase()
+                : null;
+
+        Boolean active = dto.getActive();
+        Boolean verified = dto.getVerified();
+
+        String sortBy = (dto.getSortBy() != null && isValidSortField(dto.getSortBy()))
+                ? dto.getSortBy()
+                : "surname";
+
+        String sortDir = (dto.getSortDir() != null && dto.getSortDir().equalsIgnoreCase("ASC"))
+                ? "ASC"
+                : "DESC";
+
+        int page = (dto.getPage() >= 0) ? dto.getPage() : 0;
+        int size = (dto.getSize() > 0) ? dto.getSize() : 10;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        Page<UserEntity> users = userRepository.findUsersWithFilters(
+                searchTerm,
+                active,
+                verified,
+                roles,
+                location,
+                pageable
+        );
+
+        return users.map(entity -> {
+            GetUserDto dtoResult = new GetUserDto();
+            mapUserEntityToDto(entity, dtoResult);
+            return dtoResult;
+        });
+    }
+
+    private boolean isValidSortField(String field) {
+        List<String> allowedFields = List.of(
+                "name",
+                "surname",
+                "username",
+                "email",
+                "active",
+                "verified",
+                "created_at",
+                "location_id.description"
+        );
+
+        return allowedFields.contains(field);
+    }
+    }

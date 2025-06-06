@@ -407,4 +407,12 @@ public class PublicationServiceImpl implements PublicationService {
         return publicationEntity.getUser().getId().equals(userId);
     }
 
+    @Override
+    public void deleteAllPublicationsByUserId(Integer userId) {
+        List<PublicationEntity> publications = publicationRepository.findAllByUser_Id(userId);
+        for (PublicationEntity publication : publications) {
+            deletePublication(publication.getId());
+        }
+    }
+
 }

@@ -4,6 +4,8 @@ import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.*;
 import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,5 +42,7 @@ public interface UserService {
     void resetPassword(ResetPasswordDto dto);
 
     void sendRecoveryCode(RecoveryRequestDto request);
+
+    Page<GetUserDto> filterUsers(UserFilterDto dto);
 
 }

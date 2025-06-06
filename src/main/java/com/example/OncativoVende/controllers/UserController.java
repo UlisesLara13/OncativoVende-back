@@ -2,11 +2,16 @@ package com.example.OncativoVende.controllers;
 
 import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.PostUserDto;
+import com.example.OncativoVende.dtos.post.UserFilterDto;
 import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
 import com.example.OncativoVende.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.OncativoVende.dtos.post.ChangePassword;
@@ -105,6 +110,11 @@ public class UserController {
     public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePassword changePassword) {
         userService.changePassword(changePassword);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/filter")
+    public Page<GetUserDto> filterUsers(@RequestBody UserFilterDto dto) {
+        return userService.filterUsers(dto);
     }
 
 }
