@@ -205,6 +205,7 @@ public class PublicationServiceImpl implements PublicationService {
         }
     }
 
+    @Override
     public void mapPublicationEntityToDto(PublicationEntity publicationEntity, GetPublicationDto getPublicationDto) {
         getPublicationDto.setId(publicationEntity.getId());
         getPublicationDto.setTitle(publicationEntity.getTitle());

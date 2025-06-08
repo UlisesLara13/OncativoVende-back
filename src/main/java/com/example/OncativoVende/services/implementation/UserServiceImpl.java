@@ -76,6 +76,7 @@ public class UserServiceImpl implements UserService {
         return getUserDto;
     }
 
+    @Override
     public void mapUserEntityToDto(UserEntity userEntity, GetUserDto getUserDto) {
         getUserDto.setId(userEntity.getId());
         getUserDto.setName(userEntity.getName());
@@ -91,7 +92,6 @@ public class UserServiceImpl implements UserService {
         getUserDto.setSubscription(getSubscription(userEntity));
         getUserDto.setCreated_at(userEntity.getCreated_at());
         mapRolesToGetUserDto(getUserDto);
-
     }
 
     public void mapRolesToGetUserDto(GetUserDto getUserDto) {

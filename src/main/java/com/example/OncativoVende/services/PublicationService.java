@@ -4,6 +4,7 @@ import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
 import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
+import com.example.OncativoVende.entities.PublicationEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -37,5 +38,7 @@ public interface PublicationService {
     boolean isSameUserPublication(Integer publicationId, Integer userId);
 
     void deleteAllPublicationsByUserId(Integer userId);
+
+    void mapPublicationEntityToDto(PublicationEntity publicationEntity, GetPublicationDto getPublicationDto);
 
 }
