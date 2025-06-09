@@ -22,17 +22,11 @@ public class PutUserDto {
     @Size(min = 2, max = 15, message = "Surname must be between 2 and 15 characters")
     private String surname;
 
-    @NotNull(message = "Username cannot be null")
-    @Size(min= 5 , message = "Username must be at least 5 characters")
-    private String username;
-
     @NotNull(message = "Email cannot be null")
     @Email(message = "Email must be in a valid format")
     private String email;
 
     private Integer location_id;
-
-    private String avatar_url;
 
     @NotNull(message = "Role cannot be null")
     private Integer[] roles;

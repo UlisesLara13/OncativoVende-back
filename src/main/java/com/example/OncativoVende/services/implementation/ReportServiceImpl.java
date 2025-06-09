@@ -4,6 +4,7 @@ import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.get.GetReportDto;
 import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.PostReportDto;
+import com.example.OncativoVende.dtos.post.PostSolveReportDto;
 import com.example.OncativoVende.dtos.post.ReportFilterDto;
 import com.example.OncativoVende.entities.ReportEntity;
 import com.example.OncativoVende.repositores.PublicationRepository;
@@ -12,6 +13,7 @@ import com.example.OncativoVende.repositores.UserRepository;
 import com.example.OncativoVende.services.PublicationService;
 import com.example.OncativoVende.services.ReportService;
 import com.example.OncativoVende.services.UserService;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ public class ReportServiceImpl implements ReportService {
     private final PublicationRepository publicationRepository;
 
     private final UserRepository userRepository;
+
     private final UserService userService;
 
     @Override
@@ -122,6 +125,22 @@ public class ReportServiceImpl implements ReportService {
 
     private boolean isValidSortField(String field) {
         return List.of("created_at", "status", "reason").contains(field);
+    }
+
+    @Override
+    public boolean solveReport(PostSolveReportDto postSolveReportDto) {
+        if (postSolveReportDto == null) {
+            throw new IllegalArgumentException("PostSolveReportDto cannot be null");
+        }
+
+        ReportEntity reportEntity = reportRepository.findById(postSolveReportDto.getReportId())
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+
+        reportEntity.setStatus("RESUELTO");
+        reportEntity.setResponse(postSolveReportDto.getResponse());
+        reportRepository.save(reportEntity);
+
+        return true;
     }
 
 }

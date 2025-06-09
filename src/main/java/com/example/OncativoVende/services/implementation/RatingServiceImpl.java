@@ -71,6 +71,7 @@ public class RatingServiceImpl implements RatingService {
         getShortUserDto.setId(userEntity.getId());
         getShortUserDto.setName(userEntity.getName());
         getShortUserDto.setSurname(userEntity.getSurname());
+        getShortUserDto.setUsername(userEntity.getUsername());
         getShortUserDto.setVerified(userEntity.getVerified());
         getShortUserDto.setRating(this.calculateRating(userEntity.getId()));
         getShortUserDto.setAvatar_url(userEntity.getAvatar_url());

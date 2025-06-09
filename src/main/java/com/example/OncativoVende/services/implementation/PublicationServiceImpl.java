@@ -183,6 +183,7 @@ public class PublicationServiceImpl implements PublicationService {
         }
 
     }
+    
 
     public void createImages(PostPublicationDto postPublicationDto , PublicationEntity publicationEntity) {
         for (String image_url : postPublicationDto.getImages()) {
@@ -230,6 +231,7 @@ public class PublicationServiceImpl implements PublicationService {
         getShortUserDto.setId(userEntity.getId());
         getShortUserDto.setName(userEntity.getName());
         getShortUserDto.setSurname(userEntity.getSurname());
+        getShortUserDto.setUsername(userEntity.getUsername());
         getShortUserDto.setVerified(userEntity.getVerified());
         getShortUserDto.setRating(ratingService.calculateRating(userEntity.getId()));
         getShortUserDto.setAvatar_url(userEntity.getAvatar_url());
@@ -333,6 +335,7 @@ public class PublicationServiceImpl implements PublicationService {
                 location,
                 minPrice,
                 maxPrice,
+                dto.getActive(),
                 pageable
         );
 
@@ -344,9 +347,11 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     private boolean isValidSortField(String field) {
-        return List.of("createdAt", "price", "title")
+        return List.of("createdAt", "price", "title", "views")
                 .contains(field);
     }
+
+
 
     @Override
     public Page<GetPublicationDto> filterUserPublications(Integer userId, PublicationByUserFilterDto dto) {

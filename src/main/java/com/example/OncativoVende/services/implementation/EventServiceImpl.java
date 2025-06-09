@@ -66,6 +66,7 @@ public class EventServiceImpl implements EventService {
         getShortUserDto.setId(eventEntity.getCreated_by_user_id().getId());
         getShortUserDto.setName(eventEntity.getCreated_by_user_id().getName());
         getShortUserDto.setSurname(eventEntity.getCreated_by_user_id().getSurname());
+        getShortUserDto.setUsername(eventEntity.getCreated_by_user_id().getUsername());
         getShortUserDto.setVerified(eventEntity.getCreated_by_user_id().getVerified());
         getShortUserDto.setAvatar_url(eventEntity.getCreated_by_user_id().getAvatar_url());
         getShortUserDto.setRating(ratingService.calculateRating(eventEntity.getCreated_by_user_id().getId()));

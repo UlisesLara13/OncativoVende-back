@@ -125,8 +125,6 @@ public class UserServiceImpl implements UserService {
     public void mapUserDtoToEntity(PutUserDto putUserDto, UserEntity userEntity) {
         userEntity.setName(putUserDto.getName());
         userEntity.setSurname(putUserDto.getSurname());
-        userEntity.setUsername(putUserDto.getUsername());
-        userEntity.setAvatar_url(putUserDto.getAvatar_url());
         userEntity.setEmail(putUserDto.getEmail());
         userEntity.setLocation_id(getLocationById(putUserDto.getLocation_id()));
     }
@@ -307,17 +305,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void validateUserUpdate(PutUserDto putUserDto, Integer userId) {
-        validateUsernameUpdate(putUserDto.getUsername(), userId);
         validateEmailUpdate(putUserDto.getEmail(), userId);
-    }
-
-    public void validateUsernameUpdate(String username, Integer userId) {
-        userRepository.findByUsername(username)
-                .ifPresent(user -> {
-                    if (!user.getId().equals(userId)) {
-                        throw new IllegalArgumentException("Error updating user: username already in use by another user.");
-                    }
-                });
     }
 
     public void validateEmailUpdate(String email, Integer userId) {

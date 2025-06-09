@@ -15,4 +15,5 @@ public class PublicationFilterDto {
     private String sortDir = "desc";        // Dirección de ordenamiento
     private int page = 0;                  // Página (0 = primera página)
     private int size = 12;                 // Cantidad de elementos por página
+    private Boolean active;
 }

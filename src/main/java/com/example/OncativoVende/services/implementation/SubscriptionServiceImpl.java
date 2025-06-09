@@ -78,6 +78,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         getShortUserDto.setId(subscriptionEntity.getUserId().getId());
         getShortUserDto.setName(subscriptionEntity.getUserId().getName());
         getShortUserDto.setSurname(subscriptionEntity.getUserId().getSurname());
+        getShortUserDto.setUsername(subscriptionEntity.getUserId().getUsername());
         getShortUserDto.setVerified(subscriptionEntity.getUserId().getVerified());
         getShortUserDto.setAvatar_url(subscriptionEntity.getUserId().getAvatar_url());
         getShortUserDto.setRating(ratingService.calculateRating(subscriptionEntity.getUserId().getId()));

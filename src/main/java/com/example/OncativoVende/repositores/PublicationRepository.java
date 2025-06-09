@@ -28,7 +28,7 @@ public interface PublicationRepository extends JpaRepository<PublicationEntity, 
             "LEFT JOIN CategoryEntity c ON pc.categoryEntity.id = c.id " +
             "LEFT JOIN PublicationTagEntity pt ON p.id = pt.publication.id " +
             "LEFT JOIN TagEntity t ON pt.tag.id = t.id " +
-            "WHERE p.active = true " +
+            "WHERE (:active IS NULL OR p.active = :active) " + // ← esta es la nueva línea
             "AND (" +
             "   :searchTerm IS NULL OR " +
             "   LOWER(p.title) LIKE %:searchTerm% OR " +
@@ -51,6 +51,7 @@ public interface PublicationRepository extends JpaRepository<PublicationEntity, 
             @Param("location") String location,
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice,
+            @Param("active") Boolean active,
             Pageable pageable);
 
     @Query("SELECT p FROM PublicationEntity p " +

@@ -3,6 +3,7 @@ package com.example.OncativoVende.controllers;
 import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.get.GetReportDto;
 import com.example.OncativoVende.dtos.post.PostReportDto;
+import com.example.OncativoVende.dtos.post.PostSolveReportDto;
 import com.example.OncativoVende.dtos.post.ReportFilterDto;
 import com.example.OncativoVende.services.ReportService;
 import jakarta.validation.Valid;
@@ -53,6 +54,16 @@ public class ReportController {
     @PostMapping("/filter")
     public Page<GetReportDto> filterReports(@RequestBody ReportFilterDto dto) {
         return reportService.filterReports(dto);
+    }
+
+    @PostMapping("/solve")
+    public ResponseEntity<Boolean> solveReport(@RequestBody PostSolveReportDto postSolveReportDto) {
+        Boolean result = reportService.solveReport(postSolveReportDto);
+
+        if (result == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(result);
     }
 
 }
