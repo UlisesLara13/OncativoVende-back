@@ -48,4 +48,6 @@ public interface UserService {
 
     void mapUserEntityToDto(UserEntity userEntity, GetUserDto getUserDto);
 
+    void deleteUserPermanently(Integer id);
+
 }

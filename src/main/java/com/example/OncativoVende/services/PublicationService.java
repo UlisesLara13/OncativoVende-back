@@ -4,6 +4,7 @@ import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
 import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
+import com.example.OncativoVende.dtos.put.PutPublicationDto;
 import com.example.OncativoVende.entities.PublicationEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public interface PublicationService {
 
     GetPublicationDto getPublicationById(Integer id);
 
-    GetPublicationDto updatePublication(Integer id, PostPublicationDto postPublicationDto);
+    GetPublicationDto updatePublication(Integer id, PutPublicationDto putPublicationDto);
 
     void deletePublication(Integer id);
 
@@ -41,5 +42,7 @@ public interface PublicationService {
     void deleteAllPublicationsByUserId(Integer userId);
 
     void mapPublicationEntityToDto(PublicationEntity publicationEntity, GetPublicationDto getPublicationDto);
+
+    void deleteAllPublicationsByUserPermanently(Integer userId);
 
 }

@@ -7,6 +7,7 @@ import com.example.OncativoVende.dtos.post.PostContact;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
 import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
+import com.example.OncativoVende.dtos.put.PutPublicationDto;
 import com.example.OncativoVende.entities.*;
 import com.example.OncativoVende.repositores.*;
 import com.example.OncativoVende.services.PublicationService;
@@ -104,7 +105,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     @Transactional
-    public GetPublicationDto updatePublication(Integer id, PostPublicationDto postPublicationDto) {
+    public GetPublicationDto updatePublication(Integer id, PutPublicationDto putPublicationDto) {
         PublicationEntity publicationEntity = publicationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Publication not found with id: " + id));
 
@@ -114,13 +115,13 @@ public class PublicationServiceImpl implements PublicationService {
         publicationImageRepository.deleteAllByPublicationId(publicationEntity.getId());
         contactRepository.deleteAllByPublicationId(publicationEntity.getId());
 
-        mapPublicationDtoToEntity(postPublicationDto, publicationEntity);
+        mapPublicationDtoToEntity(putPublicationDto, publicationEntity);
         publicationEntity = publicationRepository.save(publicationEntity);
 
-        createCategories(postPublicationDto, publicationEntity);
-        createTags(postPublicationDto, publicationEntity);
-        createImages(postPublicationDto, publicationEntity);
-        createContacts(postPublicationDto, publicationEntity);
+        createCategories(putPublicationDto, publicationEntity);
+        createTags(putPublicationDto, publicationEntity);
+        createImages(putPublicationDto, publicationEntity);
+        createContacts(putPublicationDto, publicationEntity);
 
         GetPublicationDto getPublicationDto = new GetPublicationDto();
         mapPublicationEntityToDto(publicationEntity, getPublicationDto);
@@ -160,6 +161,31 @@ public class PublicationServiceImpl implements PublicationService {
         publicationEntity.setViews(0);
     }
 
+    public void mapPublicationDtoToEntity(PutPublicationDto putPublicationDto, PublicationEntity publicationEntity) {
+        publicationEntity.setTitle(putPublicationDto.getTitle());
+        publicationEntity.setDescription(putPublicationDto.getDescription());
+        publicationEntity.setPrice(putPublicationDto.getPrice());
+        publicationEntity.setCreatedAt(LocalDate.now());
+        publicationEntity.setLatitude(putPublicationDto.getLatitude());
+        publicationEntity.setLongitude(putPublicationDto.getLongitude());
+        publicationEntity.setLocation_id(locationRepository.findById(putPublicationDto.getLocation_id())
+                .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + putPublicationDto.getLocation_id())));
+        publicationEntity.setActive(Boolean.TRUE);
+        publicationEntity.setViews(0);
+    }
+
+    public void createCategories(PutPublicationDto putPublicationDto , PublicationEntity publicationEntity) {
+        for (Integer category_id : putPublicationDto.getCategories()) {
+            PublicationCategoryEntity publicationCategoryEntity = new PublicationCategoryEntity();
+            publicationCategoryEntity.setPublication(publicationEntity);
+            publicationCategoryEntity.setCategoryEntity(
+                    categoryRepository.findById(category_id)
+                            .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + category_id)));
+            publicationCategoryRepository.save(publicationCategoryEntity);
+        }
+
+    }
+
     public void createCategories(PostPublicationDto postPublicationDto , PublicationEntity publicationEntity) {
         for (Integer category_id : postPublicationDto.getCategories()) {
             PublicationCategoryEntity publicationCategoryEntity = new PublicationCategoryEntity();
@@ -168,6 +194,18 @@ public class PublicationServiceImpl implements PublicationService {
                     categoryRepository.findById(category_id)
                             .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + category_id)));
             publicationCategoryRepository.save(publicationCategoryEntity);
+        }
+
+    }
+
+    public void createTags(PutPublicationDto putPublicationDto , PublicationEntity publicationEntity) {
+        for (Integer tag_id : putPublicationDto.getTags()) {
+            PublicationTagEntity publicationTagEntity = new PublicationTagEntity();
+            publicationTagEntity.setPublication(publicationEntity);
+            publicationTagEntity.setTag(
+                    tagRepository.findById(tag_id)
+                            .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + tag_id)));
+            publicationTagRepository.save(publicationTagEntity);
         }
 
     }
@@ -185,6 +223,16 @@ public class PublicationServiceImpl implements PublicationService {
     }
     
 
+    public void createImages(PutPublicationDto putPublicationDto , PublicationEntity publicationEntity) {
+        for (String image_url : putPublicationDto.getImages()) {
+            PublicationImageEntity publicationImageEntity = new PublicationImageEntity();
+            publicationImageEntity.setPublication(publicationEntity);
+            publicationImageEntity.setImage_url(image_url);
+            publicationImageRepository.save(publicationImageEntity);
+        }
+
+    }
+
     public void createImages(PostPublicationDto postPublicationDto , PublicationEntity publicationEntity) {
         for (String image_url : postPublicationDto.getImages()) {
             PublicationImageEntity publicationImageEntity = new PublicationImageEntity();
@@ -193,6 +241,17 @@ public class PublicationServiceImpl implements PublicationService {
             publicationImageRepository.save(publicationImageEntity);
         }
 
+    }
+
+    public void createContacts(PutPublicationDto putPublicationDto , PublicationEntity publicationEntity) {
+        for (PostContact contact : putPublicationDto.getContacts()) {
+            ContactEntity contactEntity = new ContactEntity();
+            contactEntity.setPublication(publicationEntity);
+            contactEntity.setContact_type(contactTypeRepository.findById(contact.getContact_type_id())
+                    .orElseThrow(() -> new EntityNotFoundException("Contact type not found with id: " + contact.getContact_type_id())));
+            contactEntity.setContact_value(contact.getContact_value());
+            contactRepository.save(contactEntity);
+        }
     }
 
     public void createContacts(PostPublicationDto postPublicationDto , PublicationEntity publicationEntity) {
@@ -421,4 +480,16 @@ public class PublicationServiceImpl implements PublicationService {
         }
     }
 
+    @Override
+    public void deleteAllPublicationsByUserPermanently(Integer userId) {
+        List<PublicationEntity> publications = publicationRepository.findAllByUser_Id(userId);
+        for (PublicationEntity publication : publications) {
+            publicationCategoryRepository.deleteAllByPublicationId(publication.getId());
+            publicationTagRepository.deleteAllByPublicationId(publication.getId());
+            publicationImageRepository.deleteAllByPublicationId(publication.getId());
+            contactRepository.deleteAllByPublicationId(publication.getId());
+            publicationRepository.delete(publication);
+        }
+
+    }
 }

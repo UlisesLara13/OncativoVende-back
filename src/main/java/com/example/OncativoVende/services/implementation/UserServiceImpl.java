@@ -233,6 +233,16 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
     }
 
+    @Transactional
+    @Override
+    public void deleteUserPermanently(Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        publicationService.deleteAllPublicationsByUserPermanently(userEntity.getId());
+        userRoleRepository.deleteAllByUser_Id(userEntity.getId());
+        userRepository.delete(userEntity);
+    }
+
     @Override
     public void activeUser(Integer id) {
         UserEntity userEntity = userRepository.findById(id)
@@ -486,4 +496,5 @@ public class UserServiceImpl implements UserService {
 
         return allowedFields.contains(field);
     }
-    }
+
+}

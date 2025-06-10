@@ -61,6 +61,12 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteUserPermanently(@PathVariable Integer id) {
+        userService.deleteUserPermanently(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/activate/{id}")
     public ResponseEntity<Void> activateUser(@PathVariable Integer id) {
         userService.activeUser(id);

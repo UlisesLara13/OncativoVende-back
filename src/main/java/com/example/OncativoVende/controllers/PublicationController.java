@@ -4,6 +4,7 @@ import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
 import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
+import com.example.OncativoVende.dtos.put.PutPublicationDto;
 import com.example.OncativoVende.services.PublicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -50,8 +51,8 @@ public class PublicationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GetPublicationDto> updatePublication(@PathVariable Integer id, @RequestBody PostPublicationDto postPublicationDto) {
-        GetPublicationDto result = publicationService.updatePublication(id, postPublicationDto);
+    public ResponseEntity<GetPublicationDto> updatePublication(@PathVariable Integer id, @RequestBody PutPublicationDto putPublicationDto) {
+        GetPublicationDto result = publicationService.updatePublication(id, putPublicationDto);
 
         if (result == null) {
             return ResponseEntity.badRequest().build();
