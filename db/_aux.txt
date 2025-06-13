@@ -3,6 +3,9 @@ USE OncativoVende;
 INSERT INTO Roles(description) VALUES
 ('ADMIN'),('USUARIO'),('MODERADOR');
 
+INSERT INTO options(id, option_name, value) VALUES
+(1,'subscription_discount', 0);
+
 INSERT INTO Categories(description) VALUES
 ('Vehículos'),('Deportes y fitness'),('Hogar y muebles'),('Electrónica'),('Indumentaria'),('Juguetes y juegos'),('Varios'),('Entretenimiento'),('Arte'),('Herramientas');
 

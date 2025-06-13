@@ -5,6 +5,7 @@ INSERT INTO Users(name, surname, username, password, email, location_id, active,
 ('Laura', 'Fernández', 'laufer', '12345678', 'laura@example.com', 4, true, true, 'https://example.com/avatars/laura.png'),
 ('Pedro', 'Ramírez', 'pedror', '12345678', 'pedro@example.com', 5, false, false, NULL);
 
+
 INSERT INTO UserRoles(role_id, user_id) VALUES
 (1, 1),   -- Ulises: ADMIN
 (2, 1),   -- Ulises: USUARIO

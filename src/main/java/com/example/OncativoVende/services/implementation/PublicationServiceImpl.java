@@ -2,6 +2,7 @@ package com.example.OncativoVende.services.implementation;
 
 import com.example.OncativoVende.dtos.get.GetContactDto;
 import com.example.OncativoVende.dtos.get.GetPublicationDto;
+import com.example.OncativoVende.dtos.get.GetPublicationsStatsDto;
 import com.example.OncativoVende.dtos.get.GetShortUserDto;
 import com.example.OncativoVende.dtos.post.PostContact;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
@@ -491,5 +492,21 @@ public class PublicationServiceImpl implements PublicationService {
             publicationRepository.delete(publication);
         }
 
+    }
+
+    @Override
+    public GetPublicationsStatsDto getPublicationsStats() {
+        List<PublicationEntity> publications = publicationRepository.findAll();
+        int totalPublications = publications.size();
+        int activePublications = (int) publications.stream().filter(PublicationEntity::getActive).count();
+        int inactivePublications = totalPublications - activePublications;
+        int totalViews = publications.stream().mapToInt(PublicationEntity::getViews).sum();
+
+        return GetPublicationsStatsDto.builder()
+                .totalPublications(totalPublications)
+                .activePublications(activePublications)
+                .inactivePublications(inactivePublications)
+                .totalViews(totalViews)
+                .build();
     }
 }

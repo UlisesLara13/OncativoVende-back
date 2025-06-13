@@ -33,4 +33,22 @@ public class SubscriptionController {
         return ResponseEntity.ok(subscription);
     }
 
+    @GetMapping("/discount")
+    public ResponseEntity<Integer> getSubscriptionDiscount() {
+        Integer discount = subscriptionService.getSubscriptionDiscount();
+        if (discount == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(discount);
+    }
+
+    @PutMapping("/discount")
+    public ResponseEntity<Boolean> updateSubscriptionDiscount(@RequestParam Integer discount) {
+        boolean updated = subscriptionService.updateSubscriptionDiscount(discount);
+        if (!updated) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(true);
+    }
+
 }

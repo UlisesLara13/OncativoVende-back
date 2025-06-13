@@ -230,6 +230,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         publicationService.deleteAllPublicationsByUserId(userEntity.getId());
         userEntity.setActive(false);
+        sendBannedEmailNotification(userEntity.getEmail());
         userRepository.save(userEntity);
     }
 
@@ -403,6 +404,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         sendRecoveryCode(user.getEmail(), code);
+    }
+
+    public void sendBannedEmailNotification(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Notificación de suspensión de cuenta");
+        message.setText("Hola,\n\nTu cuenta ha sido suspendida debido a una posible infracción de nuestras políticas. Si crees que esto es un error, por favor contacta con nuestro equipo de soporte en oncativovende@gmail.com para más información.\n\nAtentamente,\nEl equipo de soporte.");
+        mailSender.send(message);
     }
 
     @Override

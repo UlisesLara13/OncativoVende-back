@@ -27,4 +27,11 @@ public class ValidatorServiceImpl implements ValidatorService {
     public boolean isEmailUniqueAndNotCurrentUser(String email, Integer userId) {
         return !userRepository.existsByEmailAndIdNot(email, userId);
     }
+
+    @Override
+    public boolean isNotBanned(String email, String username) {
+        boolean emailBanned = userRepository.existsByEmailAndActiveFalse(email);
+        boolean usernameBanned = userRepository.existsByUsernameAndActiveFalse(username);
+        return !emailBanned && !usernameBanned;
+    }
 }

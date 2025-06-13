@@ -17,25 +17,25 @@ import java.nio.file.StandardCopyOption;
 @Data
 public class FileServiceImpl implements FileService {
 
-    private static final String PROFILE_PIC_DIRECTORY = "C:/Users/USER/Desktop/tesis/OncativoVende-front/Oncativo-Vende/src/assets/Profiles/";
-    private static final String PUBLICATION_PIC_DIRECTORY = "C:/Users/USER/Desktop/tesis/OncativoVende-front/Oncativo-Vende/src/assets/Publications/";
+    private static final String PROFILE_PIC_DIRECTORY = "C:/Users/USER/Desktop/tesis/files/Profiles/";
+    private static final String PUBLICATION_PIC_DIRECTORY = "C:/Users/USER/Desktop/tesis/files/Publications/";
 
     @Override
     public String uploadProfilePic(Long userId, MultipartFile file) throws IOException {
-        // Nombre de archivo: id de usuario + "profile-picture.jpg"
         String fileName = userId + "-profile-picture.jpg";
         Path path = Paths.get(PROFILE_PIC_DIRECTORY + fileName);
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        return "assets/Profiles/" + fileName; // Devuelves la URL relativa
+
+        return "http://localhost:8080/Profiles/" + fileName;
     }
 
     @Override
     public String uploadPublicationPic(Long publicationId, Long userId, MultipartFile file, int photoNumber) throws IOException {
-        // Nombre de archivo: id de publicación + "-" + id de usuario + "-foto" + número.jpg
         String fileName = publicationId + "-" + userId + "-foto" + photoNumber + ".jpg";
         Path path = Paths.get(PUBLICATION_PIC_DIRECTORY + fileName);
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        return "assets/Publications/" + fileName; // Devuelves la URL relativa
+
+        return "http://localhost:8080/Publications/" + fileName;
     }
 
 }

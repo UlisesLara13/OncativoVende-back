@@ -1,6 +1,7 @@
 package com.example.OncativoVende.controllers;
 
 import com.example.OncativoVende.dtos.get.GetPublicationDto;
+import com.example.OncativoVende.dtos.get.GetPublicationsStatsDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
 import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
@@ -102,6 +103,15 @@ public class PublicationController {
     public ResponseEntity<Boolean> isSameUserPublication(@PathVariable Integer publicationId, @PathVariable Integer userId) {
         boolean isSameUser = publicationService.isSameUserPublication(publicationId, userId);
         return ResponseEntity.ok(isSameUser);
+    }
+
+    @GetMapping("/total-stats")
+    public ResponseEntity<GetPublicationsStatsDto> getPublicationsStats() {
+        GetPublicationsStatsDto stats = publicationService.getPublicationsStats();
+        if (stats == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(stats);
     }
 
 }

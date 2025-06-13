@@ -41,4 +41,10 @@ public class ValidatorController {
         response.put("isUnique", isUnique);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/not-banned")
+    public ResponseEntity<Boolean> isNotBanned(@RequestParam String email, @RequestParam String username) {
+        boolean result = validatorService.isNotBanned(email, username);
+        return ResponseEntity.ok(result);
+    }
 }

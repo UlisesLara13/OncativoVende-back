@@ -1,6 +1,7 @@
 package com.example.OncativoVende.services;
 
 import com.example.OncativoVende.dtos.get.GetPublicationDto;
+import com.example.OncativoVende.dtos.get.GetPublicationsStatsDto;
 import com.example.OncativoVende.dtos.post.PostPublicationDto;
 import com.example.OncativoVende.dtos.post.PublicationByUserFilterDto;
 import com.example.OncativoVende.dtos.post.PublicationFilterDto;
@@ -44,5 +45,7 @@ public interface PublicationService {
     void mapPublicationEntityToDto(PublicationEntity publicationEntity, GetPublicationDto getPublicationDto);
 
     void deleteAllPublicationsByUserPermanently(Integer userId);
+
+    GetPublicationsStatsDto getPublicationsStats();
 
 }

@@ -25,6 +25,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     boolean existsByEmailAndIdNot(String email, Integer id);
 
+    boolean existsByEmailAndActiveFalse(String email);
+
+    boolean existsByUsernameAndActiveFalse(String username);
+
     @Query("SELECT DISTINCT u FROM UserEntity u " +
             "JOIN UserRoleEntity ur ON ur.user.id = u.id " +
             "JOIN RoleEntity r ON ur.role.id = r.id " +

@@ -4,9 +4,11 @@ import com.example.OncativoVende.dtos.get.GetSubscriptionDto;
 import com.example.OncativoVende.dtos.get.GetSubscriptionTypeDto;
 import com.example.OncativoVende.dtos.get.GetShortUserDto;
 import com.example.OncativoVende.dtos.post.PostSubscriptionDto;
+import com.example.OncativoVende.entities.OptionEntity;
 import com.example.OncativoVende.entities.SubscriptionEntity;
 import com.example.OncativoVende.entities.SubscriptionTypeEntity;
 import com.example.OncativoVende.entities.UserEntity;
+import com.example.OncativoVende.repositores.OptionRepository;
 import com.example.OncativoVende.repositores.SubscriptionRepository;
 import com.example.OncativoVende.repositores.SubscriptionTypeRepository;
 import com.example.OncativoVende.repositores.UserRepository;
@@ -28,6 +30,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionTypeRepository subscriptionTypeRepository;
 
     private final SubscriptionRepository subscriptionRepository;
+
+    private final OptionRepository optionRepository;
 
     private final RatingServiceImpl ratingService;
 
@@ -130,5 +134,24 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         mapSubscriptionEntityToDto(savedSubscription, getSubscriptionDto);
 
         return getSubscriptionDto;
+    }
+
+    @Override
+    public Integer getSubscriptionDiscount() {
+        OptionEntity optionEntity = optionRepository.findByOptionName("subscription_discount")
+                .orElseThrow(() -> new EntityNotFoundException("Option not found"));
+        return optionEntity.getValue();
+    }
+
+    @Override
+    public boolean updateSubscriptionDiscount(Integer discount) {
+        if (discount < 0 || discount > 100) {
+            throw new IllegalArgumentException("El descuento debe estar entre 0 y 100.");
+        }
+        OptionEntity optionEntity = optionRepository.findByOptionName("subscription_discount")
+                .orElseThrow(() -> new EntityNotFoundException("Option not found"));
+        optionEntity.setValue(discount);
+        optionRepository.save(optionEntity);
+        return true;
     }
 }

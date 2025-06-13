@@ -78,7 +78,6 @@ public class PaymentController {
     @GetMapping("/validate-credentials")
     public ResponseEntity<?> validateCredentials() {
         try {
-            // Intentar obtener información de la cuenta para validar credenciales
             com.mercadopago.client.user.UserClient client = new com.mercadopago.client.user.UserClient();
             com.mercadopago.resources.user.User user = client.get();
 
