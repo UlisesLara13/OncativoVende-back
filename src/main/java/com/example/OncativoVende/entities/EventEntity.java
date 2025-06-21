@@ -23,7 +23,7 @@ public class EventEntity {
     @Column
     private String title;
 
-    @Column
+    @Column(length = 500)
     private String description;
 
     @Column
@@ -33,10 +33,13 @@ public class EventEntity {
     @JoinColumn(name = "created_by_user_id", referencedColumnName = "id")
     private UserEntity created_by_user_id;
 
-    @Column
-    private LocalDate start_date;
+    @Column(name = "start_date")
+    private LocalDate startDate;
 
-    @Column
-    private LocalDate end_date;
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 
 }

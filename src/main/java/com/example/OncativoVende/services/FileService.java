@@ -11,4 +11,6 @@ public interface FileService {
 
     String uploadPublicationPic(Long publicationId, Long userId, MultipartFile file, int photoNumber) throws IOException;
 
+    String uploadEventPic(Long eventId, MultipartFile file) throws IOException;
+
 }

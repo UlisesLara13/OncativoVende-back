@@ -19,6 +19,7 @@ public class FileServiceImpl implements FileService {
 
     private static final String PROFILE_PIC_DIRECTORY = "C:/Users/USER/Desktop/tesis/files/Profiles/";
     private static final String PUBLICATION_PIC_DIRECTORY = "C:/Users/USER/Desktop/tesis/files/Publications/";
+    private static final String EVENT_PIC_DIRECTORY = "C:/Users/USER/Desktop/tesis/files/Events/";
 
     @Override
     public String uploadProfilePic(Long userId, MultipartFile file) throws IOException {
@@ -36,6 +37,15 @@ public class FileServiceImpl implements FileService {
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
         return "http://localhost:8080/Publications/" + fileName;
+    }
+
+    @Override
+    public String uploadEventPic(Long eventId, MultipartFile file) throws IOException {
+        String fileName = eventId + "-event" + ".jpg";
+        Path path = Paths.get(EVENT_PIC_DIRECTORY + fileName);
+        Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+        return "http://localhost:8080/Events/" + fileName;
     }
 
 }

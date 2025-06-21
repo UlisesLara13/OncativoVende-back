@@ -39,6 +39,16 @@ public class EventController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/last")
+    public ResponseEntity<GetEventDto> getLastEvent() {
+        GetEventDto result = eventService.getLastEvent();
+
+        if (result == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<GetEventDto> updateEvent(@PathVariable Integer id, @Valid @RequestBody PostEventDto postEventDto) {
         GetEventDto result = eventService.updateEvent(id, postEventDto);
@@ -47,6 +57,16 @@ public class EventController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/finalize/{id}")
+    public ResponseEntity<Boolean> finalizeEvent(@PathVariable Integer id) {
+        boolean finalized = eventService.finalizeEvent(id);
+
+        if (!finalized) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        return ResponseEntity.ok(true);
     }
 
 }

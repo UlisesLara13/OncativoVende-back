@@ -15,5 +15,9 @@ public interface EventService {
 
     List<GetEventDto> getAllEvents();
 
+    GetEventDto getLastEvent();
+
+    boolean finalizeEvent(Integer id);
+
 
 }
