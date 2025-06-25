@@ -6,8 +6,12 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ValidatorService {
 
-    public boolean isUsernameUnique(String username);
+    boolean isUsernameUnique(String username);
 
-    public boolean isEmailUnique(String email);
+    boolean isEmailUnique(String email);
+
+    boolean isEmailUniqueAndNotCurrentUser(String email, Integer userId);
+
+    boolean isNotBanned(String email, String username);
 
 }

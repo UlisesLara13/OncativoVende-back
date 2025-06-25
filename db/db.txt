@@ -76,9 +76,18 @@ description varchar(500),
 price decimal(10,2),
 active boolean,
 location_id int,
+latitude varchar(255),
+longitude varchar(255),
+created_at date,
+views int, 
 FOREIGN KEY (user_id) REFERENCES Users(id),
 FOREIGN KEY (location_id) REFERENCES Locations(id)
 );
+
+CREATE TABLE options(
+id INT AUTO_INCREMENT PRIMARY KEY,
+option_name varchar(255),
+value int);
 
 CREATE TABLE Favorites(
 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -124,13 +133,11 @@ CREATE TABLE Ratings(
 id INT AUTO_INCREMENT PRIMARY KEY,
 rater_user_id int,
 rated_user_id int,
-publication_id int,
 rating decimal(10,2),
 comment varchar(500),
 created_at date,
 FOREIGN KEY (rater_user_id) REFERENCES Users(id),
-FOREIGN KEY (rated_user_id) REFERENCES Users(id),
-FOREIGN KEY (publication_id) REFERENCES Publications(id));
+FOREIGN KEY (rated_user_id) REFERENCES Users(id);
 
 CREATE TABLE ContactTypes(
 id INT AUTO_INCREMENT PRIMARY KEY,

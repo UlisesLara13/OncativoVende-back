@@ -1,26 +1,33 @@
 package com.example.OncativoVende.services.implementation;
 
 import com.example.OncativoVende.dtos.get.GetUserDto;
-import com.example.OncativoVende.dtos.post.ChangePassword;
-import com.example.OncativoVende.dtos.post.PostLoginDto;
-import com.example.OncativoVende.dtos.post.PostUserDto;
+import com.example.OncativoVende.dtos.post.*;
+import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
 import com.example.OncativoVende.dtos.put.PutUserDto;
 import com.example.OncativoVende.entities.*;
 import com.example.OncativoVende.repositores.*;
 import com.example.OncativoVende.security.PasswordUtil;
+import com.example.OncativoVende.services.PublicationService;
 import com.example.OncativoVende.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Data
@@ -41,6 +48,9 @@ public class UserServiceImpl implements UserService {
     private final RatingServiceImpl ratingService;
 
     private final SubscriptionRepository subscriptionRepository;
+
+    private final JavaMailSender mailSender;
+    private final PublicationService publicationService;
 
     @Override
     public List<GetUserDto> getAllUsers() {
@@ -63,6 +73,7 @@ public class UserServiceImpl implements UserService {
         return getUserDto;
     }
 
+    @Override
     public void mapUserEntityToDto(UserEntity userEntity, GetUserDto getUserDto) {
         getUserDto.setId(userEntity.getId());
         getUserDto.setName(userEntity.getName());
@@ -76,8 +87,8 @@ public class UserServiceImpl implements UserService {
         getUserDto.setLocation(userEntity.getLocation_id().getDescription());
         getUserDto.setRating(ratingService.calculateRating(userEntity.getId()));
         getUserDto.setSubscription(getSubscription(userEntity));
+        getUserDto.setCreated_at(userEntity.getCreatedAt());
         mapRolesToGetUserDto(getUserDto);
-
     }
 
     public void mapRolesToGetUserDto(GetUserDto getUserDto) {
@@ -103,6 +114,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setAvatar_url(postUserDto.getAvatar_url());
         userEntity.setEmail(postUserDto.getEmail());
         userEntity.setLocation_id(getLocationById(postUserDto.getLocation_id()));
+        userEntity.setCreatedAt(LocalDate.now());
         userEntity.setActive(true);
         userEntity.setVerified(false);
     }
@@ -110,8 +122,6 @@ public class UserServiceImpl implements UserService {
     public void mapUserDtoToEntity(PutUserDto putUserDto, UserEntity userEntity) {
         userEntity.setName(putUserDto.getName());
         userEntity.setSurname(putUserDto.getSurname());
-        userEntity.setUsername(putUserDto.getUsername());
-        userEntity.setAvatar_url(putUserDto.getAvatar_url());
         userEntity.setEmail(putUserDto.getEmail());
         userEntity.setLocation_id(getLocationById(putUserDto.getLocation_id()));
     }
@@ -152,6 +162,12 @@ public class UserServiceImpl implements UserService {
         if (roleEntity == null) {
             throw new EntityNotFoundException("Role not found with description: PREMIUM");
         }
+
+        boolean alreadyAssigned = userRoleRepository.existsByUserAndRole(userEntity, roleEntity);
+        if (alreadyAssigned) {
+            return;
+        }
+        
         UserRoleEntity userRoleEntity = new UserRoleEntity();
         userRoleEntity.setUser(userEntity);
         userRoleEntity.setRole(roleEntity);
@@ -209,8 +225,20 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Integer id) {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        publicationService.deleteAllPublicationsByUserId(userEntity.getId());
         userEntity.setActive(false);
+        sendBannedEmailNotification(userEntity.getEmail());
         userRepository.save(userEntity);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUserPermanently(Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        publicationService.deleteAllPublicationsByUserPermanently(userEntity.getId());
+        userRoleRepository.deleteAllByUser_Id(userEntity.getId());
+        userRepository.delete(userEntity);
     }
 
     @Override
@@ -262,18 +290,30 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public void validateUserUpdate(PutUserDto putUserDto, Integer userId) {
-        validateUsernameUpdate(putUserDto.getUsername(), userId);
-        validateEmailUpdate(putUserDto.getEmail(), userId);
+    @Override
+    public GetUserDto updatePersonalData(PutPersonalDataDto putPersonalDataDto, Integer id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        validateEmailUpdate(putPersonalDataDto.getEmail(), id);
+        userEntity.setName(putPersonalDataDto.getName());
+        if (putPersonalDataDto.getSurname() != null) {
+            userEntity.setSurname(putPersonalDataDto.getSurname());
+        }
+        else {
+            userEntity.setSurname("");
+        }
+        userEntity.setEmail(putPersonalDataDto.getEmail());
+        userEntity.setLocation_id(getLocationById(putPersonalDataDto.getLocation_id()));
+
+        userRepository.save(userEntity);
+
+        GetUserDto getUserDto = new GetUserDto();
+        mapUserEntityToDto(userEntity, getUserDto);
+        return getUserDto;
     }
 
-    public void validateUsernameUpdate(String username, Integer userId) {
-        userRepository.findByUsername(username)
-                .ifPresent(user -> {
-                    if (!user.getId().equals(userId)) {
-                        throw new IllegalArgumentException("Error updating user: username already in use by another user.");
-                    }
-                });
+    public void validateUserUpdate(PutUserDto putUserDto, Integer userId) {
+        validateEmailUpdate(putUserDto.getEmail(), userId);
     }
 
     public void validateEmailUpdate(String email, Integer userId) {
@@ -346,6 +386,121 @@ public class UserServiceImpl implements UserService {
         userEntity.setAvatar_url(avatarUrl);
         userRepository.save(userEntity);
         return true;
+    }
+
+    @Override
+    public void sendRecoveryCode(RecoveryRequestDto request) {
+        UserEntity user = findByEmailOrUsername(request.getEmailOrUsername());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado.");
+        }
+
+        String code = String.format("%06d", new Random().nextInt(999999));
+        user.setRecovery_code(code);
+        user.setRecovery_code_expiration(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        sendRecoveryCode(user.getEmail(), code);
+    }
+
+    public void sendBannedEmailNotification(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Notificación de suspensión de cuenta");
+        message.setText("Hola,\n\nTu cuenta ha sido suspendida debido a una posible infracción de nuestras políticas. Si crees que esto es un error, por favor contacta con nuestro equipo de soporte en oncativovende@gmail.com para más información.\n\nAtentamente,\nEl equipo de soporte.");
+        mailSender.send(message);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDto dto) {
+        UserEntity user = findByEmailOrUsername(dto.getEmailOrUsername());
+        if (user == null || !dto.getCode().equals(user.getRecovery_code())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código inválido.");
+        }
+
+        if (user.getRecovery_code_expiration().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código expirado.");
+        }
+
+        user.setPassword(passwordEncoder.hashPassword(dto.getNewPassword()));
+        user.setRecovery_code(null);
+        user.setRecovery_code_expiration(null);
+        userRepository.save(user);
+    }
+
+    public UserEntity findByEmailOrUsername(String emailOrUsername) {
+        return userRepository.findByEmail(emailOrUsername)
+                .or(() -> userRepository.findByUsername(emailOrUsername))
+                .orElse(null);
+    }
+
+    public void sendRecoveryCode(String email, String code) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Recuperación de contraseña");
+        message.setText("Tu código de recuperación es: " + code);
+        mailSender.send(message);
+    }
+
+    @Override
+    public Page<GetUserDto> filterUsers(UserFilterDto dto) {
+        String searchTerm = (dto.getSearchTerm() != null && !dto.getSearchTerm().isBlank())
+                ? dto.getSearchTerm().toLowerCase()
+                : null;
+
+        List<String> roles = (dto.getRoles() != null && !dto.getRoles().isEmpty())
+                ? dto.getRoles().stream().map(String::toLowerCase).toList()
+                : null;
+
+        String location = (dto.getLocation() != null && !dto.getLocation().isBlank())
+                ? dto.getLocation().toLowerCase()
+                : null;
+
+        Boolean active = dto.getActive();
+        Boolean verified = dto.getVerified();
+
+        String sortBy = (dto.getSortBy() != null && isValidSortField(dto.getSortBy()))
+                ? dto.getSortBy()
+                : "surname";
+
+        String sortDir = (dto.getSortDir() != null && dto.getSortDir().equalsIgnoreCase("ASC"))
+                ? "ASC"
+                : "DESC";
+
+        int page = (dto.getPage() >= 0) ? dto.getPage() : 0;
+        int size = (dto.getSize() > 0) ? dto.getSize() : 10;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        Page<UserEntity> users = userRepository.findUsersWithFilters(
+                searchTerm,
+                active,
+                verified,
+                roles,
+                location,
+                pageable
+        );
+
+        return users.map(entity -> {
+            GetUserDto dtoResult = new GetUserDto();
+            mapUserEntityToDto(entity, dtoResult);
+            return dtoResult;
+        });
+    }
+
+    private boolean isValidSortField(String field) {
+        List<String> allowedFields = List.of(
+                "name",
+                "surname",
+                "username",
+                "email",
+                "active",
+                "verified",
+                "createdAt",
+                "location_id.description"
+        );
+
+        return allowedFields.contains(field);
     }
 
 }

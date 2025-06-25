@@ -26,7 +26,6 @@ public class PublicationEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @Column(length = 50)
     private String title;
 
     @Column(length = 500)
@@ -44,5 +43,14 @@ public class PublicationEntity {
     @ManyToOne
     @JoinColumn(name = "location_id")
     private LocationEntity location_id;
+
+    @Column
+    private String latitude;
+
+    @Column
+    private String longitude;
+
+    @Column
+    private Integer views;
 
 }

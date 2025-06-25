@@ -18,10 +18,11 @@ public class GetShortUserDto {
 
     private String surname;
 
+    private String username;
+
     private Boolean verified;
 
     private String avatar_url;
 
     private BigDecimal rating;
-
 }

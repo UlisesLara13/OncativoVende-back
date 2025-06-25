@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -45,4 +48,13 @@ public class UserEntity {
 
     @Column
     private String avatar_url;
+
+    @Column(length = 6)
+    private String recovery_code;
+
+    @Column
+    private LocalDateTime recovery_code_expiration;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 }

@@ -23,9 +23,6 @@ public class PostRatingDto {
     @NotNull (message = "Rated user ID cannot be null")
     private Integer rated_user_id;
 
-    @NotNull (message = "Publication ID cannot be null")
-    private Integer publication_id;
-
     @NotNull (message = "Rating cannot be null")
     @DecimalMin(value = "0.0", inclusive = true, message = "Rating must be at least 0")
     @DecimalMax(value = "5.0", inclusive = true, message = "Rating must be at most 5")

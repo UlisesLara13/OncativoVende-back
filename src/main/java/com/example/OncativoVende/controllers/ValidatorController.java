@@ -33,4 +33,18 @@ public class ValidatorController {
         response.put("isUnique", isUnique);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/email/current")
+    public ResponseEntity<Map<String, Boolean>> emailUniqueAndNotCurrentUser(@RequestParam String email, @RequestParam Integer userId) {
+        boolean isUnique = validatorService.isEmailUniqueAndNotCurrentUser(email, userId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isUnique", isUnique);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/not-banned")
+    public ResponseEntity<Boolean> isNotBanned(@RequestParam String email, @RequestParam String username) {
+        boolean result = validatorService.isNotBanned(email, username);
+        return ResponseEntity.ok(result);
+    }
 }

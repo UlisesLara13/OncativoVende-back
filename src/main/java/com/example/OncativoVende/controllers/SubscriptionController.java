@@ -5,10 +5,7 @@ import com.example.OncativoVende.dtos.post.PostSubscriptionDto;
 import com.example.OncativoVende.services.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/subscriptions")
@@ -26,4 +23,32 @@ public class SubscriptionController {
         }
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<GetSubscriptionDto> getSubscriptionByUserId(@PathVariable Integer userId) {
+        GetSubscriptionDto subscription = subscriptionService.getSubscriptionByUserId(userId);
+        if (subscription == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(subscription);
+    }
+
+    @GetMapping("/discount")
+    public ResponseEntity<Integer> getSubscriptionDiscount() {
+        Integer discount = subscriptionService.getSubscriptionDiscount();
+        if (discount == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(discount);
+    }
+
+    @PutMapping("/discount")
+    public ResponseEntity<Boolean> updateSubscriptionDiscount(@RequestParam Integer discount) {
+        boolean updated = subscriptionService.updateSubscriptionDiscount(discount);
+        if (!updated) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(true);
+    }
+
 }

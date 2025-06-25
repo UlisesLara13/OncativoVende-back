@@ -58,4 +58,22 @@ public class FileController {
             return ResponseEntity.status(500).body("Error uploading file");
         }
     }
+
+    @Operation(summary = "Sube una foto para un evento")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Archivo subido exitosamente"),
+            @ApiResponse(responseCode = "500", description = "Error al subir el archivo")
+    })
+    @PostMapping(value = "/upload/event/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadEventPic(
+            @PathVariable("eventId") Long eventId,
+            @Parameter(description = "Archivo de imagen a subir", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE))
+            @RequestParam("file") MultipartFile file) {
+        try {
+            String fileUrl = fileService.uploadEventPic(eventId, file);
+            return ResponseEntity.ok(fileUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error uploading file");
+        }
+    }
 }
