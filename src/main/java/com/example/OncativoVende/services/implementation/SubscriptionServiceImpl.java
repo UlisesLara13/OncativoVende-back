@@ -18,6 +18,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Data
@@ -104,7 +106,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public GetSubscriptionDto createSubscriptionByUserIdAndSubscription(String userId, String subscription){
+    public GetSubscriptionDto createSubscriptionByUserIdAndSubscription(String userId, String subscription, String unit_price) {
+
+        LocalDate today = LocalDate.now();
+
+        Long activeCount = subscriptionRepository.countActiveSubscriptions(Integer.parseInt(userId), today);
+        if (activeCount > 0) {
+            throw new IllegalStateException("Ya existe una suscripción activa para este usuario.");
+        }
+
         UserEntity userEntity = userRepository.findById(Integer.parseInt(userId))
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
@@ -126,14 +136,42 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 subscriptionEntity.setEndDate(LocalDate.now().plusMonths(12));
                 break;
         }
-        subscriptionEntity.setTotal_price(subscriptionTypeEntity.getPrice());
-        subscriptionEntity.setDiscount_applied(0);
+        subscriptionEntity.setTotal_price(new BigDecimal(unit_price));
+        subscriptionEntity.setDiscount_applied(calculateDiscountPercentage(subscription, new BigDecimal(unit_price)));
 
         SubscriptionEntity savedSubscription = subscriptionRepository.save(subscriptionEntity);
         GetSubscriptionDto getSubscriptionDto = new GetSubscriptionDto();
         mapSubscriptionEntityToDto(savedSubscription, getSubscriptionDto);
 
         return getSubscriptionDto;
+    }
+
+    int calculateDiscountPercentage(String subscriptionType, BigDecimal unitPrice) {
+        BigDecimal normalPrice;
+
+        switch (subscriptionType) {
+            case "Bronce":
+                normalPrice = BigDecimal.valueOf(1500);
+                break;
+            case "Plata":
+                normalPrice = BigDecimal.valueOf(7500);
+                break;
+            case "Oro":
+                normalPrice = BigDecimal.valueOf(12000);
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo de suscripción no válido: " + subscriptionType);
+        }
+
+        if (normalPrice.compareTo(BigDecimal.ZERO) == 0) {
+            return 0;
+        }
+
+        BigDecimal discount = normalPrice.subtract(unitPrice)
+                .divide(normalPrice, 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
+
+        return discount.setScale(0, RoundingMode.HALF_UP).intValue();
     }
 
     @Override

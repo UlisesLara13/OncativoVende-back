@@ -11,7 +11,7 @@ public interface SubscriptionService {
 
     GetSubscriptionDto getSubscriptionByUserId(Integer userId);
 
-    GetSubscriptionDto createSubscriptionByUserIdAndSubscription(String userId, String subscription);
+    GetSubscriptionDto createSubscriptionByUserIdAndSubscription(String userId, String subscription, String unit_price);
 
     Integer getSubscriptionDiscount();
 

@@ -134,20 +134,17 @@ public class PaymentController {
                 return ResponseEntity.status(response.statusCode()).body("Error consultando pago en MercadoPago");
             }
 
-            // Parsear JSON de respuesta
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> paymentData = objectMapper.readValue(response.body(), new TypeReference<Map<String, Object>>() {});
 
-            // Verificar estado del pago
             String status = (String) paymentData.get("status");
             if ("approved".equalsIgnoreCase(status)) {
-                // Aquí va la lógica para activar la suscripción
-                // Por ejemplo, obtener el usuario a partir del email u otro campo
                 Map<String, Object> payer = (Map<String, Object>) paymentData.get("payer");
                 String email = payer != null ? (String) payer.get("email") : null;
                 Map<String, Object> additionalInfo = (Map<String, Object>) paymentData.get("additional_info");
                 List<Map<String, Object>> items = (List<Map<String, Object>>) additionalInfo.get("items");
                 String title = items != null && !items.isEmpty() ? (String) items.get(0).get("title") : null;
+                String unit_price = items != null && !items.isEmpty() ? (String) items.get(0).get("unit_price") : null;
                 String externalReference = (String) paymentData.get("external_reference");
 
                 String subscription = "Desconocida";
@@ -170,7 +167,7 @@ public class PaymentController {
                     logger.info("External Reference (user id): {}", externalReference);
                     logger.info(subscription);
                     logger.info("Suscripción activada para el usuario: {}", email);
-                    subscriptionService.createSubscriptionByUserIdAndSubscription(externalReference,subscription);
+                    subscriptionService.createSubscriptionByUserIdAndSubscription(externalReference,subscription, unit_price);
                 } else {
                     logger.warn("No se encontró el usuario pagador en la respuesta");
                 }

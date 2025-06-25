@@ -52,4 +52,81 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
             @Param("location") String location,
             Pageable pageable);
 
+    Long countByCreatedAtBetween(LocalDate from, LocalDate to);
+
+    Long countByActive(Boolean active);
+    Long countByActiveAndCreatedAtBetween(Boolean active, LocalDate from, LocalDate to);
+
+    Long countByVerified(Boolean verified);
+    Long countByVerifiedAndCreatedAtBetween(Boolean verified, LocalDate from, LocalDate to);
+
+    @Query("""
+        SELECT u.location_id.description, COUNT(u)
+        FROM UserEntity u
+        WHERE (:from IS NULL OR u.createdAt >= :from)
+          AND (:to IS NULL OR u.createdAt <= :to)
+        GROUP BY u.location_id.description
+    """)
+    List<Object[]> countUsersByLocationBetweenDates(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+        @Query("""
+        SELECT COUNT(DISTINCT u.id)
+        FROM UserEntity u
+        JOIN UserRoleEntity ur ON ur.user.id = u.id
+        JOIN RoleEntity r ON r.id = ur.role.id
+        WHERE r.description = :roleName
+    """)
+        Long countByRoleName(@Param("roleName") String roleName);
+
+    @Query("""
+    SELECT COUNT(DISTINCT u.id)
+    FROM UserEntity u
+    JOIN UserRoleEntity ur ON ur.user.id = u.id
+    JOIN RoleEntity r ON r.id = ur.role.id
+    WHERE r.description = :roleName
+      AND u.createdAt BETWEEN :from AND :to
+""")
+    Long countByRoleNameBetweenDates(@Param("roleName") String roleName,
+                                     @Param("from") LocalDate from,
+                                     @Param("to") LocalDate to);
+
+    @Query("""
+    SELECT COUNT(DISTINCT u)
+    FROM UserEntity u
+    JOIN UserRoleEntity ur1 ON ur1.user.id = u.id
+    JOIN RoleEntity r1 ON r1.id = ur1.role.id
+    WHERE r1.description = 'USUARIO'
+      AND u.id NOT IN (
+          SELECT u2.id
+          FROM UserEntity u2
+          JOIN UserRoleEntity ur2 ON ur2.user.id = u2.id
+          JOIN RoleEntity r2 ON r2.id = ur2.role.id
+          WHERE r2.description = 'PREMIUM'
+      )
+""")
+    Long countStandardUsersOnly();
+
+        @Query("""
+        SELECT COUNT(DISTINCT u)
+        FROM UserEntity u
+        JOIN UserRoleEntity ur1 ON ur1.user.id = u.id
+        JOIN RoleEntity r1 ON r1.id = ur1.role.id
+        WHERE r1.description = 'USUARIO'
+          AND u.createdAt BETWEEN :from AND :to
+          AND u.id NOT IN (
+              SELECT u2.id
+              FROM UserEntity u2
+              JOIN UserRoleEntity ur2 ON ur2.user.id = u2.id
+              JOIN RoleEntity r2 ON r2.id = ur2.role.id
+              WHERE r2.description = 'PREMIUM'
+          )
+    """)
+        Long countStandardUsersOnlyBetweenDates(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query("""
+      SELECT u.location_id.description, COUNT(u)
+      FROM UserEntity u
+      GROUP BY u.location_id.description
+    """)
+        List<Object[]> countUsersByLocationAllTime();
 }

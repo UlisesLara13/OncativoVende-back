@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +69,33 @@ public interface PublicationRepository extends JpaRepository<PublicationEntity, 
             @Param("searchTerm") String searchTerm,
             @Param("active") Boolean active,
             Pageable pageable);
+
+
+    Long countByCreatedAtBetween(LocalDate from, LocalDate to);
+
+    Long countByActive(Boolean active);
+    Long countByActiveAndCreatedAtBetween(Boolean active, LocalDate from, LocalDate to);
+
+    @Query("SELECT SUM(p.views) FROM PublicationEntity p")
+    Long getTotalViews();
+
+    @Query("SELECT SUM(p.views) FROM PublicationEntity p WHERE p.createdAt BETWEEN :from AND :to")
+    Long getTotalViewsBetweenDates(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query("SELECT AVG(p.price) FROM PublicationEntity p")
+    BigDecimal getAveragePrice();
+
+    @Query("SELECT AVG(p.price) FROM PublicationEntity p WHERE p.createdAt BETWEEN :from AND :to")
+    BigDecimal getAveragePriceBetweenDates(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query("""
+        SELECT p.location_id.description, COUNT(p)
+        FROM PublicationEntity p
+        WHERE (:from IS NULL OR p.createdAt >= :from)
+          AND (:to IS NULL OR p.createdAt <= :to)
+        GROUP BY p.location_id.description
+    """)
+    List<Object[]> countByLocation(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
 }
 

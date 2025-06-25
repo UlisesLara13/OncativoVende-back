@@ -75,7 +75,6 @@ public class MercadoPagoService {
                     .pending(baseUrl + "/payment-pending")
                     .build();
 
-            // Usar externalReference enviado desde frontend o generar uno nuevo si es nulo
             String externalRef = paymentRequest.getExternalReference();
             if (externalRef == null || externalRef.isEmpty()) {
                 externalRef = generateExternalReference();
@@ -145,7 +144,6 @@ public class MercadoPagoService {
                 items.add(itemRequest);
             }
         } else {
-            // Item por defecto si no se proporcionan items específicos
             PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
                     .title(paymentRequest.getDescription() != null ? paymentRequest.getDescription() : "Producto")
                     .description(paymentRequest.getDescription() != null ? paymentRequest.getDescription() : "Compra en Oncativo Vende")
@@ -168,7 +166,6 @@ public class MercadoPagoService {
         try {
             PreferenceClient client = new PreferenceClient();
 
-            // Crear una preferencia mínima para probar el token
             List<PreferenceItemRequest> testItems = new ArrayList<>();
             PreferenceItemRequest testItem = PreferenceItemRequest.builder()
                     .title("Test")

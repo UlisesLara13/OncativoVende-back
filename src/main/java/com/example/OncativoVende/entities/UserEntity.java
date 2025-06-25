@@ -55,6 +55,6 @@ public class UserEntity {
     @Column
     private LocalDateTime recovery_code_expiration;
 
-    @Column
-    private LocalDate created_at;
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 }

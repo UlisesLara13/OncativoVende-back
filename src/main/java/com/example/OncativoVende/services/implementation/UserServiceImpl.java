@@ -1,6 +1,5 @@
 package com.example.OncativoVende.services.implementation;
 
-import com.example.OncativoVende.dtos.get.GetPublicationDto;
 import com.example.OncativoVende.dtos.get.GetUserDto;
 import com.example.OncativoVende.dtos.post.*;
 import com.example.OncativoVende.dtos.put.PutPersonalDataDto;
@@ -14,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +26,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -90,7 +87,7 @@ public class UserServiceImpl implements UserService {
         getUserDto.setLocation(userEntity.getLocation_id().getDescription());
         getUserDto.setRating(ratingService.calculateRating(userEntity.getId()));
         getUserDto.setSubscription(getSubscription(userEntity));
-        getUserDto.setCreated_at(userEntity.getCreated_at());
+        getUserDto.setCreated_at(userEntity.getCreatedAt());
         mapRolesToGetUserDto(getUserDto);
     }
 
@@ -117,7 +114,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setAvatar_url(postUserDto.getAvatar_url());
         userEntity.setEmail(postUserDto.getEmail());
         userEntity.setLocation_id(getLocationById(postUserDto.getLocation_id()));
-        userEntity.setCreated_at(LocalDate.now());
+        userEntity.setCreatedAt(LocalDate.now());
         userEntity.setActive(true);
         userEntity.setVerified(false);
     }
@@ -499,7 +496,7 @@ public class UserServiceImpl implements UserService {
                 "email",
                 "active",
                 "verified",
-                "created_at",
+                "createdAt",
                 "location_id.description"
         );
 
