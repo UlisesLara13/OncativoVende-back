@@ -147,21 +147,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     int calculateDiscountPercentage(String subscriptionType, BigDecimal unitPrice) {
-        BigDecimal normalPrice;
+        String normalizedType = subscriptionType.toUpperCase(); 
 
-        switch (subscriptionType) {
-            case "Bronce":
-                normalPrice = BigDecimal.valueOf(1500);
-                break;
-            case "Plata":
-                normalPrice = BigDecimal.valueOf(7500);
-                break;
-            case "Oro":
-                normalPrice = BigDecimal.valueOf(12000);
-                break;
-            default:
-                throw new IllegalArgumentException("Tipo de suscripción no válido: " + subscriptionType);
-        }
+        BigDecimal normalPrice = subscriptionTypeRepository.findByDescription(normalizedType)
+                .map(SubscriptionTypeEntity::getPrice)
+                .orElseThrow(() -> new EntityNotFoundException("Subscription type not found: " + subscriptionType));
 
         if (normalPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0;
@@ -173,6 +163,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         return discount.setScale(0, RoundingMode.HALF_UP).intValue();
     }
+
 
     @Override
     public Integer getSubscriptionDiscount() {
